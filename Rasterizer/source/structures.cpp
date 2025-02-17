@@ -7,6 +7,10 @@ Structures::Mesh::Mesh(std::vector<Vertex> vertices, std::vector<int> indices)
     m_indices = indices;
 }
 
+Structures::Mesh::Mesh()
+{
+}
+
 Structures::Mesh* Structures::Mesh::createCube()
 {
 	Mesh* cubeMesh = new Mesh();
@@ -56,6 +60,11 @@ Structures::Vertex::Vertex(LibMath::Vector4 vec)
     m_position = LibMath::Vector3(vec.getX(), vec.getY(), vec.getZ());
 }
 
+Structures::Vertex::Vertex(LibMath::Vector3 vec)
+{
+    m_position = vec;
+}
+
 Structures::Texture::Texture(unsigned int width, unsigned int height, Color color)
 {
     m_width = width;
@@ -93,6 +102,13 @@ Structures::Entity::Entity(Mesh* mesh, LibMath::Matrix4 transform)
     m_transform = transform;
 }
 
+Structures::Entity::Entity(Entity const& other)
+{
+    m_mesh = other.m_mesh;
+
+    m_transform = other.m_transform;
+}
+
 Structures::Mesh Structures::Entity::getTransformedMesh(void)
 {
     Mesh transformed;
@@ -125,24 +141,27 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture)
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
-            float x1 = transformedMesh.m_vertices[i].m_position.getX();
-            float y1 = transformedMesh.m_vertices[i].m_position.getY();
+            int index1 = transformedMesh.m_indices[i];
+            float x1 = transformedMesh.m_vertices[index1].m_position.getX();
+            float y1 = transformedMesh.m_vertices[index1].m_position.getY();
             int p_x1 = ((x1 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y1 = pTexture->m_height - (((y1 / 5) + 1) * 0.5 * pTexture->m_height);
 
-            float x2 = transformedMesh.m_vertices[i + 1].m_position.getX();
-            float y2 = transformedMesh.m_vertices[i + 1].m_position.getY();
+            int index2 = transformedMesh.m_indices[i + 1];
+            float x2 = transformedMesh.m_vertices[index2].m_position.getX();
+            float y2 = transformedMesh.m_vertices[index2].m_position.getY();
             int p_x2 = ((x2 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y2 = pTexture->m_height - (((y2 / 5) + 1) * 0.5 * pTexture->m_height);
-
-            float x3 = transformedMesh.m_vertices[i + 2].m_position.getX();
-            float y3 = transformedMesh.m_vertices[i + 2].m_position.getY();
+            
+            int index3 = transformedMesh.m_indices[i + 2];
+            float x3 = transformedMesh.m_vertices[index3].m_position.getX();
+            float y3 = transformedMesh.m_vertices[index3].m_position.getY();
             int p_x3 = ((x3 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y3 = pTexture->m_height - (((y3 / 5) + 1) * 0.5 * pTexture->m_height);
 
-            drawLine(x1, y1, x2, y2, *pTexture);
-            drawLine(x2, y2, x3, y3, *pTexture);
-            drawLine(x1, y1, x3, y3, *pTexture);
+            drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
+            drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
+            drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
         }
     }
     

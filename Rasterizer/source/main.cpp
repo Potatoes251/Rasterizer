@@ -44,8 +44,6 @@ int main(void)
 
         rasterizer.renderScene(&scene, &tex);
 
-        
-
         for (size_t i = 0; i < screenWidth; i++)
         {
             for (size_t j = 0; j < screenHeight; j++)
@@ -56,8 +54,6 @@ int main(void)
             }
         }
 
-
-        
         EndDrawing();
         //----------------------------------------------------------------------------------
     }

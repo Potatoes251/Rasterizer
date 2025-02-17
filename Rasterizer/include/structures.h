@@ -13,7 +13,7 @@ namespace Structures
 
 		Vertex(LibMath::Vector4 vec);
 
-		//Vertex(LibMath::Vector3 vec);
+		Vertex(LibMath::Vector3 vec);
 
 		LibMath::Vector3 m_position;
 	};
@@ -22,7 +22,7 @@ namespace Structures
 	{
 		Mesh(std::vector<Vertex> vertices, std::vector<int> indices);
 
-		Mesh() = default;
+		Mesh();
 
 		static Mesh* createCube();
 
@@ -54,7 +54,7 @@ namespace Structures
 
 		Texture(unsigned int width, unsigned int height, Color colors = Color(0, 0, 0, 0));
 
-		void setPixelColor(unsigned int x, unsigned int y, const Color& c = Color(1, 1, 1, 1));
+		void setPixelColor(unsigned int x, unsigned int y, const Color& c = Color(255, 255, 255, 255));
 
 		unsigned int m_width;
 
@@ -70,6 +70,8 @@ namespace Structures
 		Entity(Mesh* mesh, LibMath::Matrix4 transform);
 
 		Entity() = default;
+
+		Entity(Entity const&);
 
 		Mesh getTransformedMesh(void);
 
