@@ -11,6 +11,10 @@ namespace Structures
 
 		Vertex(float x, float y, float z);
 
+		Vertex(LibMath::Vector4 vec);
+
+		//Vertex(LibMath::Vector3 vec);
+
 		LibMath::Vector3 m_position;
 	};
 
@@ -30,6 +34,8 @@ namespace Structures
 
 	struct Color
 	{
+		Color() = default;
+
 		Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
 
 		unsigned char m_r;
@@ -46,25 +52,36 @@ namespace Structures
 	{
 		Texture() = delete;
 
-		void setPixelColor(unsigned int x, unsigned int y, const Color& c);
+		Texture(unsigned int width, unsigned int height, Color colors = Color(0, 0, 0, 0));
+
+		void setPixelColor(unsigned int x, unsigned int y, const Color& c = Color(1, 1, 1, 1));
 
 		unsigned int m_width;
 
 		unsigned int m_height;
 
-		Color* m_pxiels;
+		Color* m_pixels;
 
 	};
 
 	struct Entity
 	{
-		Mesh* m_mesh;
+
+		Entity(Mesh* mesh, LibMath::Matrix4 transform);
+
+		Entity() = default;
+
+		Mesh getTransformedMesh(void);
+
+		Mesh* m_mesh = nullptr;
 
 		LibMath::Matrix4 m_transform;
 	};
 
 	struct Scene
 	{
+		Scene(std::vector<Entity> entities);
+
 		std::vector<Entity> m_entities;
 	};
 
@@ -73,4 +90,7 @@ namespace Structures
 		void renderScene(Scene* pScene, Texture* pTexture);
 	};
 
+	void drawLine(int x0, int y0, int x1, int y1, Texture& tex);
+
 }
+

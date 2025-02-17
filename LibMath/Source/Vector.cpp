@@ -745,6 +745,8 @@ LibMath::Vector4::Vector4(Vector4 const& other)
 	m_k = other.m_k;
 }
 
+LibMath::Vector4::Vector4(Vector3 const& other, float w) : m_x(other.getX()), m_y(other.getY()), m_z(other.getZ()), m_k(w) {};
+
 float& LibMath::Vector4::operator[](int n)
 {
 	if (n == 0)

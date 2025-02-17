@@ -8,5 +8,6 @@
 #include "Quaternion.h"
 #include "Trigonometry.h"
 #include "Vector.h"
+#include "Matrix4Vector4Operation.h"
 
 #endif // !LIBMATH_ANGLE_H_

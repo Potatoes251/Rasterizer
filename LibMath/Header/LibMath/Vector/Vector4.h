@@ -10,6 +10,7 @@ namespace LibMath
 		explicit		Vector4(float val);
 						Vector4(float x, float y, float z, float k);
 						Vector4(Vector4 const& other);
+						Vector4(Vector3 const& other, float w);
 
 
 		Vector4&		operator=(Vector4 const& other) = default;

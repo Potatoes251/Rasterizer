@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "structures.h"
 
 
 
@@ -10,7 +11,7 @@ int main(void)
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenHeight = 600;
 
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
@@ -29,10 +30,34 @@ int main(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-        ClearBackground(RAYWHITE);
+        Structures::Mesh* cube = Structures::Mesh::createCube();
 
-        DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        Structures::Entity entity (cube, LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f)));
 
+        std::vector<Structures::Entity> entities = { entity };
+
+        Structures::Scene scene (entities);
+
+        Structures::Texture tex(screenWidth, screenHeight);
+
+        Structures::Rasterizer rasterizer;
+
+        rasterizer.renderScene(&scene, &tex);
+
+        
+
+        for (size_t i = 0; i < screenWidth; i++)
+        {
+            for (size_t j = 0; j < screenHeight; j++)
+            {
+                Structures::Color color = tex.m_pixels[j * screenWidth + i];
+                Color raylibColor = { color.m_r, color.m_g, color.m_b, color.m_a };
+                DrawPixel(i, j, raylibColor);
+            }
+        }
+
+
+        
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
