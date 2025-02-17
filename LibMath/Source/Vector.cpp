@@ -548,8 +548,7 @@ std::string LibMath::Vector3::string(void) const
 
 std::string LibMath::Vector3::stringLong(void) const
 {
-	return std::format("Vector3{{ x:{}, y:{}, z:{} }}", formatNumber(m_x), formatNumber(m_y), formatNumber(m_z));
-	//return std::string();
+	return std::string("Vector3{ x:" + formatNumber(m_x) + ", y:" + formatNumber(m_y) + ", z:" + formatNumber(m_z) + " }");
 }
 
 void LibMath::Vector3::translate(Vector3 const& vec)
