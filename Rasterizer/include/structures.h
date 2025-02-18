@@ -11,7 +11,7 @@ namespace Structures
 
 		Vertex(float x, float y, float z, Structures::Color color = COLOR_WHITE);
 
-		Vertex(LibMath::Vector4 vec);
+		Vertex(LibMath::Vector4 vec, Structures::Color color = COLOR_WHITE);
 
 		Vertex(LibMath::Vector3 vec);
 

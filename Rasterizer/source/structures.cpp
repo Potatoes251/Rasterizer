@@ -56,10 +56,10 @@ Structures::Vertex::Vertex(float x, float y, float z, Color color)
     m_color = color;
 }
 
-Structures::Vertex::Vertex(LibMath::Vector4 vec)
+Structures::Vertex::Vertex(LibMath::Vector4 vec, Structures::Color color)
 {
     m_position = LibMath::Vector3(vec.getX(), vec.getY(), vec.getZ());
-    m_color = COLOR_WHITE;
+    m_color = color;
 }
 
 Structures::Vertex::Vertex(LibMath::Vector3 vec)
@@ -111,10 +111,10 @@ Structures::Color::Color(unsigned char r, unsigned char g, unsigned char b, unsi
 
 Structures::Color::Color(Color const& other)
 {
-    m_r = m_r;
-    m_g = m_g;
-    m_b = m_b;
-    m_a = m_a;
+    m_r = other.m_r;
+    m_g = other.m_g;
+    m_b = other.m_b;
+    m_a = other.m_a;
 }
 
 Structures::Color& Structures::Color::operator=(Structures::Color const& other)
@@ -177,7 +177,7 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
 
         temp.homogenize();
 
-        transformed.m_vertices.push_back(Structures::Vertex(temp));
+        transformed.m_vertices.push_back(Structures::Vertex(temp, vertex.m_color));
     }
 
     return transformed;
@@ -212,12 +212,14 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             int p_x3 = ((x3 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y3 = pTexture->m_height - (((y3 / 5) + 1) * 0.5 * pTexture->m_height);
 
-            drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
-            drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
-            drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
-            //std::cout << static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_r) << '\t' << static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_g) << '\t'
-                //<< static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_b) << '\t' << static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_a) << '\n';
-            if (!wireframe)
+            if (wireframe)
+            {
+                drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
+                drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
+                drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
+            }
+            
+            else
             fillTriangle(Structures::Vertex(p_x1, p_y1, 0, transformedMesh.m_vertices[index1].m_color),
                 Structures::Vertex(p_x2, p_y2, 0, transformedMesh.m_vertices[index2].m_color),
                 Structures::Vertex(p_x3, p_y3, 0, transformedMesh.m_vertices[index3].m_color), *pTexture);
@@ -260,8 +262,7 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             float beta = edgeFunction(v2, v3, point) / area;
             float gamma = edgeFunction(v3, v1, point) / area;
             if (alpha < 0 || beta < 0 || gamma < 0) continue;
-            //std::cout << static_cast<int>(v2.m_color.m_r) << '\t' << static_cast<int>(v2.m_color.m_g) << '\t' 
-            //    << static_cast<int>(v2.m_color.m_b) << '\t' << static_cast<int>(v2.m_color.m_a) << '\n';
+
             tex.setPixelColor(i, j, (v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma));
         }
     }

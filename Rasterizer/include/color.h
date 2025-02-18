@@ -21,13 +21,13 @@ namespace Structures
 		Color operator+(Color other);
 		Color operator*(float val);
 
-		unsigned char m_r;
+		unsigned char m_r = 125;
 
-		unsigned char m_g;
+		unsigned char m_g = 125;
 
-		unsigned char m_b;
+		unsigned char m_b = 125;
 
-		unsigned char m_a;
+		unsigned char m_a = 125;
 
 	};
 }

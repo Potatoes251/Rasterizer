@@ -43,16 +43,8 @@ int main(void)
     Structures::Vertex v3(0.0f, 0.5f, 0.0f, COLOR_BLUE);
     //v3.setColor(COLOR_BLUE);
 
-    Structures::Mesh triangleMesh;
-    triangleMesh.m_vertices.push_back(v1);
-    triangleMesh.m_vertices[0].setColor(COLOR_RED);
-    triangleMesh.m_vertices.push_back(v2);
-    triangleMesh.m_vertices[1].setColor(COLOR_GREEN);
-    triangleMesh.m_vertices.push_back(v3);
-    triangleMesh.m_indices = { 0, 1, 2 };
-    triangleMesh.m_vertices[2].setColor(COLOR_BLUE);
-    std::cout << static_cast<int>(triangleMesh.m_vertices[2].m_color.m_r) << '\t' << static_cast<int>(triangleMesh.m_vertices[2].m_color.m_g) << '\t'
-        << static_cast<int>(triangleMesh.m_vertices[2].m_color.m_b) << '\t' << static_cast<int>(triangleMesh.m_vertices[2].m_color.m_a) << '\n';
+    Structures::Mesh triangleMesh({ v1, v2, v3 }, { 0, 1, 2 });
+
     entity = Structures::Entity(&triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 0.f)));
 
     entities = { entity };
@@ -61,7 +53,7 @@ int main(void)
 
     rasterizer.renderScene(&scene2, &tex, false);
 
-    Structures::Color color;
+    //Structures::Color color;
     
 
     while (!WindowShouldClose())
@@ -73,7 +65,7 @@ int main(void)
         {
             for (size_t j = 0; j < screenHeight; j++)
             {
-                color = tex.m_pixels[j * tex.m_width + i];
+                Structures::Color color = tex.m_pixels[j * tex.m_width + i];
                 Color raylibColor = { color.m_r, color.m_g, color.m_b, color.m_a };
                 DrawPixel(i, j, raylibColor);
             }
