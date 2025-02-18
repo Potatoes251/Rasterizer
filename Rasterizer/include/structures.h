@@ -1,7 +1,7 @@
 #include "LibMath/LibMath.h"
 #include <vector>
 
-
+#include "color.h"
 
 namespace Structures
 {
@@ -9,13 +9,18 @@ namespace Structures
 	{
 		Vertex() = default;
 
-		Vertex(float x, float y, float z);
+		Vertex(float x, float y, float z, Structures::Color color = COLOR_WHITE);
 
 		Vertex(LibMath::Vector4 vec);
 
 		Vertex(LibMath::Vector3 vec);
 
+		float operator[](int index);
+
+		void setColor(Color color);
+
 		LibMath::Vector3 m_position;
+		Structures::Color m_color;
 	};
 
 	struct Mesh
@@ -32,29 +37,13 @@ namespace Structures
 
 	};
 
-	struct Color
-	{
-		Color() = default;
-
-		Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-
-		unsigned char m_r;
-
-		unsigned char m_g;
-
-		unsigned char m_b;
-
-		unsigned char m_a;
-
-	};
-
 	struct Texture
 	{
 		Texture() = delete;
 
-		Texture(unsigned int width, unsigned int height, Color colors = Color(0, 0, 0, 0));
+		Texture(unsigned int width, unsigned int height, Color colors = COLOR_BLACK);
 
-		void setPixelColor(unsigned int x, unsigned int y, const Color& c = Color(255, 255, 255, 255));
+		void setPixelColor(unsigned int x, unsigned int y, const Color& c = COLOR_WHITE);
 
 		unsigned int m_width;
 
@@ -89,7 +78,11 @@ namespace Structures
 
 	struct Rasterizer
 	{
-		void renderScene(Scene* pScene, Texture* pTexture);
+		void renderScene(Scene* pScene, Texture* pTexture, bool wireframe = true);
+
+		float edgeFunction(Vertex v1, Vertex v2, Vertex v3);
+
+		void fillTriangle(Vertex v1, Vertex v2, Vertex v3 ,Texture& tex);
 	};
 
 	void drawLine(int x0, int y0, int x1, int y1, Texture& tex);

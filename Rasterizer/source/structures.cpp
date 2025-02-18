@@ -50,19 +50,32 @@ Structures::Mesh* Structures::Mesh::createCube()
 	return cubeMesh;
 }
 
-Structures::Vertex::Vertex(float x, float y, float z)
+Structures::Vertex::Vertex(float x, float y, float z, Color color)
 {
 	m_position = LibMath::Vector3(x, y, z);
+    m_color = color;
 }
 
 Structures::Vertex::Vertex(LibMath::Vector4 vec)
 {
     m_position = LibMath::Vector3(vec.getX(), vec.getY(), vec.getZ());
+    m_color = COLOR_WHITE;
 }
 
 Structures::Vertex::Vertex(LibMath::Vector3 vec)
 {
     m_position = vec;
+    m_color = COLOR_WHITE;
+}
+
+float Structures::Vertex::operator[](int index)
+{
+    return m_position[index];
+}
+
+void Structures::Vertex::setColor(Color color)
+{
+    m_color = color;
 }
 
 Structures::Texture::Texture(unsigned int width, unsigned int height, Color color)
@@ -78,6 +91,7 @@ Structures::Texture::Texture(unsigned int width, unsigned int height, Color colo
         for (size_t j = 0; j < height; j++)
         {
             m_pixels[(j * width) + i] = color;
+            
         }
     }
 }
@@ -93,6 +107,45 @@ Structures::Color::Color(unsigned char r, unsigned char g, unsigned char b, unsi
     m_g = g; 
     m_b = b; 
     m_a = a;
+}
+
+Structures::Color::Color(Color const& other)
+{
+    m_r = m_r;
+    m_g = m_g;
+    m_b = m_b;
+    m_a = m_a;
+}
+
+Structures::Color& Structures::Color::operator=(Structures::Color const& other)
+{
+    m_r = other.m_r;
+    m_g = other.m_g;
+    m_b = other.m_b;
+    m_a = other.m_a;
+
+    return *this;
+}
+
+Structures::Color& Structures::Color::operator=(Color const&& other) noexcept
+{
+    if (this != &other) {
+        m_r = std::move(other.m_r);
+        m_g = std::move(other.m_g);
+        m_b = std::move(other.m_b);
+        m_a = std::move(other.m_a);
+    }
+    return *this;
+}
+
+Structures::Color Structures::Color::operator+(Color other)
+{
+    return Color(m_r + other.m_r, m_g + other.m_g, m_b + other.m_b, m_a + other.m_a);
+}
+
+Structures::Color Structures::Color::operator*(float val)
+{
+    return Color(m_r * val, m_g * val, m_b * val, m_a * val);
 }
 
 Structures::Entity::Entity(Mesh* mesh, LibMath::Matrix4 transform)
@@ -130,7 +183,7 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
     return transformed;
 }
 
-void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture)
+void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool wireframe)
 {
 
     Mesh transformedMesh;
@@ -162,12 +215,60 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture)
             drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
             drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
             drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
+            //std::cout << static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_r) << '\t' << static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_g) << '\t'
+                //<< static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_b) << '\t' << static_cast<int>(transformedMesh.m_vertices[index2].m_color.m_a) << '\n';
+            if (!wireframe)
+            fillTriangle(Structures::Vertex(p_x1, p_y1, 0, transformedMesh.m_vertices[index1].m_color),
+                Structures::Vertex(p_x2, p_y2, 0, transformedMesh.m_vertices[index2].m_color),
+                Structures::Vertex(p_x3, p_y3, 0, transformedMesh.m_vertices[index3].m_color), *pTexture);
         }
     }
-    
 }
 
-void Structures::drawLine(int x0, int y0, int x1, int y1, Structures::Texture& tex) {
+float Structures::Rasterizer::edgeFunction(Vertex v1, Vertex v2, Vertex v3)
+{
+    return -((v2[0] - v1[0]) * (v3[1] - v1[1]) - (v2[1] - v1[1]) * (v3[0] - v1[0]));
+}
+
+void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& tex)
+{
+    float area = edgeFunction(v1, v2, v3);
+    
+    if (area < 0) return;
+
+    int xMin = (v1[0] < v2[0]) ? v1[0] : v2[0];
+    xMin = (v3[0] < xMin) ? v3[0] : xMin;
+
+    int xMax = (v1[0] > v2[0]) ? v1[0] : v2[0];
+    xMax = (v3[0] > xMax) ? v3[0] : xMax;
+
+    int yMin = (v1[1] < v2[1]) ? v1[1] : v2[1];
+    yMin = (v3[1] < yMin) ? v3[1] : yMin;
+
+    int yMax = (v1[1] > v2[1]) ? v1[1] : v2[1];
+    yMax = (v3[1] > yMax) ? v3[1] : yMax;
+    
+    Structures::Vertex point;
+
+    for (int i = xMin; i < xMax; i++)
+    {
+        for (int j = yMin; j < yMax; j++)
+        {
+            point = Structures::Vertex(i, j, 0);
+
+            float alpha = edgeFunction(v1, v2, point) / area;
+            float beta = edgeFunction(v2, v3, point) / area;
+            float gamma = edgeFunction(v3, v1, point) / area;
+            if (alpha < 0 || beta < 0 || gamma < 0) continue;
+            //std::cout << static_cast<int>(v2.m_color.m_r) << '\t' << static_cast<int>(v2.m_color.m_g) << '\t' 
+            //    << static_cast<int>(v2.m_color.m_b) << '\t' << static_cast<int>(v2.m_color.m_a) << '\n';
+            tex.setPixelColor(i, j, (v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma));
+        }
+    }
+}
+
+void Structures::drawLine(int x0, int y0, int x1, int y1, Structures::Texture& tex) 
+{
     // Calculate the differences in x and y
     int dx = abs(x1 - x0);
     int dy = abs(y1 - y0);
@@ -178,9 +279,6 @@ void Structures::drawLine(int x0, int y0, int x1, int y1, Structures::Texture& t
 
     // Initialize the error term
     int err = dx - dy;
-
-    // Vector to store the points of the line
-    std::vector<std::pair<int, int>> linePoints;
 
     while (true) {
         // Add the current point to the vector
