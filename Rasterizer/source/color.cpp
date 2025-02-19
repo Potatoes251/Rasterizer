@@ -28,10 +28,10 @@ Structures::Color& Structures::Color::operator=(Structures::Color const& other)
 
 Structures::Color Structures::Color::operator+(Color other)
 {
-    return Color(m_r + other.m_r, m_g + other.m_g, m_b + other.m_b, m_a + other.m_a);
+    return Color(m_r + other.m_r, m_g + other.m_g, m_b + other.m_b, 255);
 }
 
 Structures::Color Structures::Color::operator*(float val)
 {
-    return Color(m_r * val, m_g * val, m_b * val, m_a * val);
+    return Color(m_r * val, m_g * val, m_b * val, m_a);
 }

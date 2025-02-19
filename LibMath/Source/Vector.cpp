@@ -462,7 +462,7 @@ void LibMath::Vector3::reflectOnto(Vector3 const& vec)
 
 	float dot_p = dot(normalized_vec);
 
-	Vector3 vec3 = normalized_vec * dot_p;
+	//Vector3 vec3 = normalized_vec * dot_p;
 
 	m_x = m_x - 2 * dot_p * normalized_vec.m_x;
 	m_y = m_y - 2 * dot_p * normalized_vec.m_y;

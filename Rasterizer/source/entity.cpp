@@ -38,7 +38,10 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
 
         temp.homogenize();
 
-        transformed.m_vertices.push_back(Structures::Vertex(temp, vertex.m_color));
+        Structures::Vertex result(temp, vertex.m_color);
+        result.m_normal = vertex.m_normal;
+
+        transformed.m_vertices.push_back(result);
     }
 
     return transformed;

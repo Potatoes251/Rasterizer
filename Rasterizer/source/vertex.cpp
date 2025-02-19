@@ -42,12 +42,13 @@ float Structures::Vertex::calculateSpecular(Structures::Light light, Structures:
 
     LibMath::Vector3 viewPointDirection = m_position - viewPoint.m_position;
     viewPointDirection.normalize();
-
     return std::max(viewPointDirection.dot(lightReflection) * light.m_specular, 0.f);
 }
 
 void Structures::Vertex::calculateLighting(Structures::Light light, Structures::Vertex viewPoint)
 {
+    Color diffuse = m_color * calculatediffuse(light);
+    Color specular = m_color * calculateSpecular(light, viewPoint);
     m_color = m_color * light.m_ambient + m_color * calculatediffuse(light) + m_color * calculateSpecular(light, viewPoint);
 }
 

@@ -9,6 +9,7 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
     for each(Entity entity in pScene->m_entities)
     {
         transformedMesh = entity.getTransformedMesh();
+
         for (size_t i = 0; i < transformedMesh.m_vertices.size(); i++)
         {
             transformedMesh.m_vertices[i].calculateLighting(pScene->m_lights[0], viewPoint);

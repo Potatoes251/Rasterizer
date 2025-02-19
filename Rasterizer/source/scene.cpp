@@ -16,8 +16,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     Structures::Mesh* cube = Structures::Mesh::createCube();
 
-    Structures::Entity entity(cube, 
-        LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f)));
+    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f)));
 
     scene.m_entities.push_back(entity);
 
