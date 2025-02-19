@@ -26,7 +26,6 @@ Structures::Mesh* Structures::Mesh::createCube()
     for (const auto& vertex : coordinates)
     {
         cubeMesh->m_vertices.push_back(Structures::Vertex(vertex));
-
     }
 
     cubeMesh->m_indices = {
@@ -43,6 +42,33 @@ Structures::Mesh* Structures::Mesh::createCube()
         3, 2, 7, // bottom triangle 1
         3, 7, 4 // bottom trianlge2
     };
+
+    Vertex v1, v2, v3;
+
+    LibMath::Vector3 v1v2;
+    LibMath::Vector3 v1v3;
+    LibMath::Vector3 normal;
+
+    for (size_t i = 0; i < cubeMesh->m_indices.size(); i += 3)
+    {
+        v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]];
+        v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]];
+        v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]];
+
+        v1v3 = v3.m_position - v1.m_position;
+        v1v2 = v2.m_position - v1.m_position;
+
+        normal = v1v2.cross(v1v3);
+
+        cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal += normal;
+        cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal += normal;
+        cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal += normal;
+    }
+
+    for (size_t i = 0; i < cubeMesh->m_vertices.size(); i++)
+    {
+        cubeMesh->m_vertices[i].m_normal.normalize();
+    }
 
     return cubeMesh;
 }

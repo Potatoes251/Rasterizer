@@ -4,11 +4,15 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
 {
 
     Mesh transformedMesh;
+    Structures::Vertex viewPoint(0, 0, 1);
 
     for each(Entity entity in pScene->m_entities)
     {
         transformedMesh = entity.getTransformedMesh();
-
+        for (size_t i = 0; i < transformedMesh.m_vertices.size(); i++)
+        {
+            transformedMesh.m_vertices[i].calculateLighting(pScene->m_lights[0], viewPoint);
+        }
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
             int index1 = transformedMesh.m_indices[i];

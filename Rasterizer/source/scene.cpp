@@ -1,19 +1,23 @@
 #include "scene.h"
 
-Structures::Scene::Scene(std::vector<Entity> entities)
+Structures::Scene::Scene(std::vector<Entity> entities, std::vector<Light> lights)
 {
     m_entities = entities;
+    m_lights = lights;
 }
 
 Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex)
 {
     Structures::Scene scene;
 
+    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3::zero()) };
+
     // entity 1 : cube
 
     Structures::Mesh* cube = Structures::Mesh::createCube();
 
-    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f)));
+    Structures::Entity entity(cube, 
+        LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f)));
 
     scene.m_entities.push_back(entity);
 
