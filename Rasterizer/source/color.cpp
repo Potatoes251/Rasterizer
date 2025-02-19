@@ -1,0 +1,37 @@
+#include "color.h"
+
+Structures::Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
+{
+    m_r = r;
+    m_g = g;
+    m_b = b;
+    m_a = a;
+}
+
+Structures::Color::Color(Color const& other)
+{
+    m_r = other.m_r;
+    m_g = other.m_g;
+    m_b = other.m_b;
+    m_a = other.m_a;
+}
+
+Structures::Color& Structures::Color::operator=(Structures::Color const& other)
+{
+    m_r = other.m_r;
+    m_g = other.m_g;
+    m_b = other.m_b;
+    m_a = other.m_a;
+
+    return *this;
+}
+
+Structures::Color Structures::Color::operator+(Color other)
+{
+    return Color(m_r + other.m_r, m_g + other.m_g, m_b + other.m_b, m_a + other.m_a);
+}
+
+Structures::Color Structures::Color::operator*(float val)
+{
+    return Color(m_r * val, m_g * val, m_b * val, m_a * val);
+}
