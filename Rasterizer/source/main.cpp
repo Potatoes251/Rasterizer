@@ -1,5 +1,5 @@
+#define _USE_MATH_DEFINES
 #include "raylib.h"
-
 #include "rasterizer.h"
 #include "scene.h"
 
@@ -18,7 +18,9 @@ int main(void)
 
     Structures::Scene scene = Structures::Scene::createProjectScene(tex);
 
-    rasterizer.renderScene(&scene, &tex);
+    LibMath::Matrix4 projectionMatrix = LibMath::Matrix4::perspective(M_PI / 4.0f, 16 / 9, 0.1f, 10.f);
+
+    rasterizer.renderScene(&scene, &tex, projectionMatrix);
 
     while (!WindowShouldClose())
     {

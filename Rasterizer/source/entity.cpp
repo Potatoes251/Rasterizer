@@ -23,10 +23,11 @@ Structures::Entity& Structures::Entity::operator=(Entity const& other)
     return *this;
 }
 
-Structures::Mesh Structures::Entity::getTransformedMesh(void)
+Structures::Mesh Structures::Entity::getTransformedMesh(LibMath::Matrix4 projectionMatrix)
 {
     Mesh transformed;
     LibMath::Vector4 temp;
+    LibMath::Matrix4 rowMajor = projectionMatrix;
 
     transformed.m_indices = m_mesh->m_indices;
 
@@ -34,7 +35,7 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
     {
         temp = LibMath::Vector4(vertex.m_position, 1.0f);
 
-        temp = m_transform * temp;
+        temp =  rowMajor * (m_transform * temp);
 
         temp.homogenize();
 
@@ -42,4 +43,17 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
     }
 
     return transformed;
+}
+
+LibMath::Vector4 Structures::Entity::projectMesh(LibMath::Vector4 transformedMeshPosition, LibMath::Matrix4 projectionMatrix)
+{
+    LibMath::Vector4 tempMeshPosition = LibMath::Vector4(transformedMeshPosition);
+
+    LibMath::Matrix4 rowMajor = projectionMatrix.transpose();
+
+    tempMeshPosition = rowMajor * tempMeshPosition;
+
+    tempMeshPosition.homogenize();
+
+    return tempMeshPosition;
 }

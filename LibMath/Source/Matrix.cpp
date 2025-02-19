@@ -671,7 +671,7 @@ LibMath::Matrix4::Matrix4(float a00, float a01, float a02, float a03,
 	m_elements[3][3] = a33;
 }
 
-LibMath::Matrix4::Matrix4(Matrix4& other)
+LibMath::Matrix4::Matrix4(const Matrix4& other)
 {
 	m_elements[0][0] = other.m_elements[0][0];
 	m_elements[0][1] = other.m_elements[0][1];

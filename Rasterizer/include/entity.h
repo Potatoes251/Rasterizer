@@ -14,7 +14,9 @@ namespace Structures
 
 		Entity& operator=(Entity const& other);
 
-		Mesh getTransformedMesh(void);
+		Mesh getTransformedMesh(LibMath::Matrix4 projectionMatrix);
+
+		static LibMath::Vector4 projectMesh(LibMath::Vector4 transformedMeshPosition, LibMath::Matrix4 projectionMatrix);
 
 
 		Mesh* m_mesh = nullptr;

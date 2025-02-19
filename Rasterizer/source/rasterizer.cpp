@@ -1,13 +1,13 @@
 #include "rasterizer.h"
 
-void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool wireframe, float near, float far)
+void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, LibMath::Matrix4 const& projectionMatrix, bool wireframe, float near, float far)
 {
 
     Mesh transformedMesh;
 
     for each(Entity entity in pScene->m_entities)
     {
-        transformedMesh = entity.getTransformedMesh();
+        transformedMesh = entity.getTransformedMesh(projectionMatrix);
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
@@ -16,27 +16,23 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             float y1 = transformedMesh.m_vertices[index1].m_position.getY();
             int p_x1 = ((x1 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y1 = pTexture->m_height - (((y1 / 5) + 1) * 0.5 * pTexture->m_height);
-            // orthographic projection
-            float z1 = transformedMesh.m_vertices[index1].m_position.getZ() - near;
-            float p_z1 = (- 2.f * z1 / (far - near)) - ((far + near) / (far - near));
+            float p_z1 = transformedMesh.m_vertices[index1].m_position.getZ();
 
             int index2 = transformedMesh.m_indices[i + 1];
             float x2 = transformedMesh.m_vertices[index2].m_position.getX();
             float y2 = transformedMesh.m_vertices[index2].m_position.getY();
             int p_x2 = ((x2 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y2 = pTexture->m_height - (((y2 / 5) + 1) * 0.5 * pTexture->m_height);
-            float z2 = transformedMesh.m_vertices[index2].m_position.getZ() - near;
-            float p_z2 = (-2.f * z2 / (far - near)) - ((far + near) / (far - near));
+            float p_z2 = transformedMesh.m_vertices[index2].m_position.getZ();
 
             int index3 = transformedMesh.m_indices[i + 2];
             float x3 = transformedMesh.m_vertices[index3].m_position.getX();
             float y3 = transformedMesh.m_vertices[index3].m_position.getY();
             int p_x3 = ((x3 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y3 = pTexture->m_height - (((y3 / 5) + 1) * 0.5 * pTexture->m_height);
+            float p_z3 = transformedMesh.m_vertices[index3].m_position.getZ();
 
-            float z3 = transformedMesh.m_vertices[index3].m_position.getZ() - near;
-            float p_z3 = (-2.f * z3 / (far - near)) - ((far + near) / (far - near));
-
+            std::cout << "x1: " << x1 << " y1 : " << y1 << " z1: " << p_z1 << '\n';
 
             if (wireframe)
             {
@@ -92,7 +88,7 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             float gamma = edgeFunction(v3, v1, point) / area;
             if (alpha < 0 || beta < 0 || gamma < 0) continue;
 
-            if (tex.buffer(i, j) < zMax)
+            if (tex.buffer(i, j) < zMax) // z-culling
             {
                 tex.setPixelColor(i, j, (v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma));
                 tex.updateBuffer(i, j, zMax);

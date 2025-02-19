@@ -1,8 +1,8 @@
 #define _USE_MATH_DEFINES
-
 #ifndef _CMATH_
 #include <cmath>
 #endif // !_CMATH_
+
 #include "mesh.h"
 
 
