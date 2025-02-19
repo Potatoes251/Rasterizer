@@ -56,7 +56,7 @@ namespace LibMath
 		static		Matrix4			createTransform(LibMath::Vector3 translate = LibMath::Vector3(0.0f, 0.0f, 0.0f), // returns T . R . S
 												LibMath::Radian rotation = LibMath::Radian(0.0f),
 												LibMath::Vector3 scale = LibMath::Vector3(1.0f, 1.0f, 1.0f),
-												LibMath::Vector3 axis = LibMath::Vector3(1.0f, 1.0f, 1.0f));
+												LibMath::Vector3 axis = LibMath::Vector3(.0f, 1.0f, .0f));
 
 		static		Matrix4			createTranslate(LibMath::Vector3 translate);
 		static		Matrix4			createRotationX(LibMath::Radian angle);

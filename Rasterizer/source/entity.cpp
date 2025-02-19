@@ -32,14 +32,17 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
 
     for each(Structures::Vertex vertex in m_mesh->m_vertices)
     {
-        temp = LibMath::Vector4(vertex.m_position, 1.0f);
-
+        temp = LibMath::Vector4(vertex.m_position, 1.0f);   // transform the position
         temp = m_transform * temp;
-
         temp.homogenize();
 
         Structures::Vertex result(temp, vertex.m_color);
-        result.m_normal = vertex.m_normal;
+
+        temp = LibMath::Vector4(vertex.m_normal, 1.0f);     // transform the normal
+        temp = m_transform * temp;
+        temp.homogenize();
+
+        result.m_normal = LibMath::Vector3 (temp.getX(), temp.getY(), temp.getZ());
 
         transformed.m_vertices.push_back(result);
     }

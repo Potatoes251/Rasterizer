@@ -10,6 +10,8 @@ namespace Structures
 		Texture() = delete;
 		Texture(unsigned int width, unsigned int height, Color colors = COLOR_BLACK);
 
+
+		void clearTexture(const Color& c = COLOR_BLACK);
 		void setPixelColor(unsigned int x, unsigned int y, const Color& c = COLOR_WHITE);
 
 		void drawTexture() const;

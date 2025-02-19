@@ -3,6 +3,9 @@
 #include "rasterizer.h"
 #include "scene.h"
 
+float rotation = 0.f;
+
+
 int main(void)
 {
     const int screenWidth = 800;
@@ -18,10 +21,15 @@ int main(void)
 
     Structures::Scene scene = Structures::Scene::createProjectScene(tex);
 
-    rasterizer.renderScene(&scene, &tex);
+    
 
     while (!WindowShouldClose())
     {
+        rotation += 0.05f;
+        scene.m_entities[0].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f), 
+                                                                            LibMath::Radian(rotation));
+        rasterizer.renderScene(&scene, &tex);
+
         tex.drawTexture();
     }
     CloseWindow();

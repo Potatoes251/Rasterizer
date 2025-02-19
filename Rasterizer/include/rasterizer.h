@@ -15,6 +15,8 @@ namespace Structures
 		void fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& tex);
 
 		void drawLine(int x0, int y0, int x1, int y1, Texture& tex);
+
+		Structures::Vertex projectVertex(Vertex v, float width, float height);
 	};
 }
 
