@@ -1,6 +1,6 @@
 #include "rasterizer.h"
 
-void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool wireframe)
+void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool wireframe, float near, float far)
 {
 
     Mesh transformedMesh;
@@ -16,18 +16,27 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             float y1 = transformedMesh.m_vertices[index1].m_position.getY();
             int p_x1 = ((x1 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y1 = pTexture->m_height - (((y1 / 5) + 1) * 0.5 * pTexture->m_height);
+            // orthographic projection
+            float z1 = transformedMesh.m_vertices[index1].m_position.getZ() - near;
+            float p_z1 = (- 2.f * z1 / (far - near)) - ((far + near) / (far - near));
 
             int index2 = transformedMesh.m_indices[i + 1];
             float x2 = transformedMesh.m_vertices[index2].m_position.getX();
             float y2 = transformedMesh.m_vertices[index2].m_position.getY();
             int p_x2 = ((x2 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y2 = pTexture->m_height - (((y2 / 5) + 1) * 0.5 * pTexture->m_height);
+            float z2 = transformedMesh.m_vertices[index2].m_position.getZ() - near;
+            float p_z2 = (-2.f * z2 / (far - near)) - ((far + near) / (far - near));
 
             int index3 = transformedMesh.m_indices[i + 2];
             float x3 = transformedMesh.m_vertices[index3].m_position.getX();
             float y3 = transformedMesh.m_vertices[index3].m_position.getY();
             int p_x3 = ((x3 / 5) + 1) * 0.5 * pTexture->m_width;
             int p_y3 = pTexture->m_height - (((y3 / 5) + 1) * 0.5 * pTexture->m_height);
+
+            float z3 = transformedMesh.m_vertices[index3].m_position.getZ() - near;
+            float p_z3 = (-2.f * z3 / (far - near)) - ((far + near) / (far - near));
+
 
             if (wireframe)
             {
@@ -37,9 +46,9 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             }
 
             else
-                fillTriangle(Structures::Vertex(p_x1, p_y1, 0, transformedMesh.m_vertices[index1].m_color),
-                    Structures::Vertex(p_x2, p_y2, 0, transformedMesh.m_vertices[index2].m_color),
-                    Structures::Vertex(p_x3, p_y3, 0, transformedMesh.m_vertices[index3].m_color), *pTexture);
+                fillTriangle(Structures::Vertex(p_x1, p_y1, p_z1, transformedMesh.m_vertices[index1].m_color),
+                    Structures::Vertex(p_x2, p_y2, p_z2, transformedMesh.m_vertices[index2].m_color),
+                    Structures::Vertex(p_x3, p_y3, p_z3, transformedMesh.m_vertices[index3].m_color), *pTexture);
         }
     }
 }
@@ -67,6 +76,9 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
     int yMax = (v1[1] > v2[1]) ? v1[1] : v2[1];
     yMax = (v3[1] > yMax) ? v3[1] : yMax;
 
+    float zMax = (v1[2] > v2[2]) ? v1[2] : v2[2];
+    zMax = (v3[2] > zMax) ? v3[2] : zMax;
+
     Structures::Vertex point;
 
     for (int i = xMin; i < xMax; i++)
@@ -80,7 +92,13 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             float gamma = edgeFunction(v3, v1, point) / area;
             if (alpha < 0 || beta < 0 || gamma < 0) continue;
 
-            tex.setPixelColor(i, j, (v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma));
+            if (tex.buffer(i, j) < zMax)
+            {
+                tex.setPixelColor(i, j, (v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma));
+                tex.updateBuffer(i, j, zMax);
+            }
+
+            
         }
     }
 }

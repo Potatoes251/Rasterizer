@@ -8,7 +8,7 @@ namespace Structures
 {
 	struct Rasterizer
 	{
-		void renderScene(Scene* pScene, Texture* pTexture, bool wireframe = false);
+		void renderScene(Scene* pScene, Texture* pTexture, bool wireframe = false, float near = 3, float far = -3);
 
 		float edgeFunction(Vertex v1, Vertex v2, Vertex v3);
 

@@ -2,7 +2,7 @@
 
 #include "texture.h"
 
-Structures::Texture::Texture(unsigned int width, unsigned int height, Color color)
+Structures::Texture::Texture(unsigned int width, unsigned int height, Color color, float zMax)
 {
     m_width = width;
 
@@ -10,11 +10,15 @@ Structures::Texture::Texture(unsigned int width, unsigned int height, Color colo
 
     m_pixels = new Color[width * height];
 
+    m_zBuffer = new float[width * height];
+
     for (size_t i = 0; i < width; i++)
     {
         for (size_t j = 0; j < height; j++)
         {
             m_pixels[(j * width) + i] = color;
+
+            m_zBuffer[(j * width) + i] = zMax;
         }
     }
 }
@@ -38,4 +42,14 @@ void Structures::Texture::drawTexture() const
         }
     }
     EndDrawing();
+}
+
+float Structures::Texture::buffer(int const x, int const y)
+{
+    return m_zBuffer[(y * m_width) + x];
+}
+
+void Structures::Texture::updateBuffer(int const x, int const y, float zMax)
+{
+    m_zBuffer[(y * m_width) + x] = zMax;
 }

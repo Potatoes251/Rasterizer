@@ -14,6 +14,8 @@ namespace Structures
 
 		static Mesh* createCube();
 
+		static Mesh* createSphere(int widthSegments = 15, int heightSegments = 15, float radius = 0.6);
+
 		std::vector<Vertex> m_vertices;
 		std::vector<int> m_indices;
 
