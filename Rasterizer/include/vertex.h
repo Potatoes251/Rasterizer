@@ -11,6 +11,7 @@ namespace Structures
 	{
 		Vertex() = default;
 		Vertex(float x, float y, float z, Structures::Color color = COLOR_WHITE);
+		Vertex(float x, float y, float z, float u, float v, Structures::Color color = COLOR_WHITE);
 		Vertex(LibMath::Vector4 vec, Structures::Color color = COLOR_WHITE);
 		Vertex(LibMath::Vector3 vec, Structures::Color color = COLOR_WHITE);
 
@@ -26,6 +27,9 @@ namespace Structures
 		LibMath::Vector3 m_position;
 		LibMath::Vector3 m_normal;
 		Structures::Color m_color;
+
+		float m_u = 0;	// texture coordinate
+		float m_v = 0;
 	};
 }
 

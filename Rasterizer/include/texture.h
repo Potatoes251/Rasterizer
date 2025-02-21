@@ -3,13 +3,14 @@
 
 #include "color.h"
 
+
 namespace Structures
 {
 	struct Texture
 	{
 		Texture() = delete;
 		Texture(unsigned int width, unsigned int height, Color colors = COLOR_BLACK);
-
+		Texture(char const* texture);
 
 		void clearTexture(const Color& c = COLOR_BLACK);
 		void setPixelColor(unsigned int x, unsigned int y, const Color& c = COLOR_WHITE);

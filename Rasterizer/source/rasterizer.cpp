@@ -6,9 +6,9 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
     Mesh transformedMesh;
     Structures::Vertex viewPoint(0, 0, 1);
 
-    for each(Entity entity in pScene->m_entities)
+    for (int j = 0; j < pScene->m_entities.size(); j++)
     {
-        transformedMesh = entity.getTransformedMesh();
+        transformedMesh = pScene->m_entities[j].getTransformedMesh();
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
@@ -20,9 +20,15 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
 
             if (wireframe)
             {
-                //drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
-                //drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
-                //drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
+                drawLine(projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height), 
+                 projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height), 
+                 *pTexture);
+                drawLine(projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height), 
+                 projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
+                 *pTexture);
+                drawLine(projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height), 
+                 projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
+                 *pTexture);
             }
 
             else
@@ -30,7 +36,7 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
                     projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height),
                     projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height),
                     projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
-                    *pTexture);
+                    *pTexture, pScene->m_entities[j].m_mesh->pTexture);
         }
     }
 }
@@ -40,7 +46,27 @@ float Structures::Rasterizer::edgeFunction(Vertex v1, Vertex v2, Vertex v3)
     return -((v2[0] - v1[0]) * (v3[1] - v1[1]) - (v2[1] - v1[1]) * (v3[0] - v1[0]));
 }
 
-void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& tex)
+Structures::Color Structures::Rasterizer::getNearestTexel(Vertex v, Texture* tex)
+{
+    float xTex = v.m_u * tex->m_width;
+    float yTex = v.m_v * tex->m_height;
+
+    int x = static_cast<int>(xTex);
+    int y = static_cast<int>(yTex);
+
+    if (xTex - x >= 0.5f)
+    {
+        ++x;
+    }
+    if (yTex - y >= 0.5f)
+    {
+        ++y;
+    }
+    Structures::Color c = tex->m_pixels[(y * tex->m_width) + x];
+    return c;
+}
+
+void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture)
 {
     float area = edgeFunction(v1, v2, v3);
 
@@ -67,17 +93,30 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             
             point.m_normal = LibMath::Vector3(v3.m_normal * alpha + v1.m_normal * beta + v2.m_normal * gamma);
             point.m_normal.normalize();
-            
-            point.m_color = Structures::Color(v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma);
-            point.calculateLighting(Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3::zero()), 
-                                    Structures::Vertex(0, 0, 1));
-            tex.setPixelColor(i, j, point.m_color);
+            if (objectTexture != nullptr)
+            {
+                point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);
+                point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
+
+                point.m_color = getNearestTexel(point, objectTexture);
+            }
+            else
+            {
+                point.m_color = Structures::Color(v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma);
+            }
+            point.calculateLighting(Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3::zero()), Structures::Vertex(0, 0, 1));
+            sceneTexture.setPixelColor(i, j, point.m_color);
         }
     }
 }
 
-void Structures::Rasterizer::drawLine(int x0, int y0, int x1, int y1, Structures::Texture& tex)
+void Structures::Rasterizer::drawLine(Vertex v0, Vertex v1, Structures::Texture& tex)
 {
+    int x0 = v0[0];
+    int y0 = v0[1];
+    int x1 = v1[0];
+    int y1 = v1[1];
+
     // Calculate the differences in x and y
     int dx = abs(x1 - x0);
     int dy = abs(y1 - y0);
@@ -113,13 +152,15 @@ void Structures::Rasterizer::drawLine(int x0, int y0, int x1, int y1, Structures
 
 Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, float height)
 {
-    float x1 = v.m_position.getX();
-    float y1 = v.m_position.getY();
-    int p_x1 = ((x1 / 5) + 1) * 0.5 * width;
-    int p_y1 = height - (((y1 / 5) + 1) * 0.5 * height);
+    float x = v.m_position.getX();
+    float y = v.m_position.getY();
+    int p_x = ((x / 5) + 1) * 0.5 * width;
+    int p_y = height - (((y / 5) + 1) * 0.5 * height);
 
-    Structures::Vertex projectedVertex(p_x1, p_y1, 0, v.m_color);
+    Structures::Vertex projectedVertex(p_x, p_y, 0, v.m_color);
     projectedVertex.m_normal = v.m_normal;
+    projectedVertex.m_u = v.m_u;
+    projectedVertex.m_v = v.m_v;
 
     return projectedVertex;
 }

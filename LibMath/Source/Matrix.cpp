@@ -912,7 +912,7 @@ LibMath::Matrix4 LibMath::Matrix4::createTransform(LibMath::Vector3 translate, L
 {
 	float cosR = LibMath::cos(rotation);
 	float sinR = LibMath::sin(rotation);
-
+	axis.normalize();
 	float k = 1 - cosR;
 
 	float pow2X = powf(axis.getX(), 2.f);

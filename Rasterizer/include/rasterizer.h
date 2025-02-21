@@ -12,9 +12,11 @@ namespace Structures
 
 		float edgeFunction(Vertex v1, Vertex v2, Vertex v3);
 
-		void fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& tex);
+		Color getNearestTexel(Vertex v, Texture* tex);
 
-		void drawLine(int x0, int y0, int x1, int y1, Texture& tex);
+		void fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture);
+
+		void drawLine(Vertex v1, Vertex v2, Texture& tex);
 
 		Structures::Vertex projectVertex(Vertex v, float width, float height);
 	};

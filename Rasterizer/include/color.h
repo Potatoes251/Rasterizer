@@ -1,11 +1,22 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-#define COLOR_RED Structures::Color(255, 0, 0, 255)
-#define COLOR_GREEN Structures::Color(0, 255, 0, 255)
-#define COLOR_BLUE Structures::Color(0, 0, 255, 255)
-#define COLOR_WHITE Structures::Color(255, 255, 255, 255)
-#define COLOR_BLACK Structures::Color(0, 0, 0, 255)
+#define COLOR_RED		Structures::Color(255, 0, 0, 255)
+#define COLOR_GREEN		Structures::Color(0, 255, 0, 255)
+#define COLOR_BLUE		Structures::Color(0, 0, 255, 255)
+#define COLOR_WHITE		Structures::Color(255, 255, 255, 255)
+#define COLOR_BLACK		Structures::Color(0, 0, 0, 255)
+
+#define COLOR_YELLOW	Structures::Color(255, 255, 0, 255)
+#define COLOR_CYAN		Structures::Color(0, 255, 255, 255)
+#define COLOR_MAGENTA	Structures::Color(255, 0, 255, 255)
+#define COLOR_ORANGE	Structures::Color(255, 165, 0, 255)
+#define COLOR_PURPLE	Structures::Color(128, 0, 128, 255)
+#define COLOR_BROWN		Structures::Color(165, 42, 42, 255)
+#define COLOR_GRAY		Structures::Color(128, 128, 128, 255)
+#define COLOR_PINK		Structures::Color(255, 192, 203, 255)
+#define COLOR_LIME		Structures::Color(50, 205, 50, 255)
+#define COLOR_GOLD		Structures::Color(255, 215, 0, 255)
 
 namespace Structures
 {

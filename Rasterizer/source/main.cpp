@@ -3,8 +3,8 @@
 #include "rasterizer.h"
 #include "scene.h"
 
-float rotation = 0.f;
-
+float g_rotation = 0.f;
+bool g_wireframe = false;
 
 int main(void)
 {
@@ -18,17 +18,23 @@ int main(void)
     Structures::Rasterizer rasterizer;
 
     Structures::Texture tex(800, 600, COLOR_BLACK);
+    
 
     Structures::Scene scene = Structures::Scene::createProjectScene(tex);
 
-    
-
     while (!WindowShouldClose())
     {
-        rotation += 0.05f;
+        if (IsKeyPressed(KEY_F1)) // Check if F1 key is pressed
+        {
+            g_wireframe = !g_wireframe;
+        }
+
+        g_rotation += 0.05f;
         scene.m_entities[0].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f), 
-                                                                            LibMath::Radian(rotation));
-        rasterizer.renderScene(&scene, &tex);
+                                                                            LibMath::Radian(g_rotation));
+        scene.m_entities[2].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 0.f),
+                                                                            LibMath::Radian(g_rotation));
+        rasterizer.renderScene(&scene, &tex, g_wireframe);
 
         tex.drawTexture();
     }
