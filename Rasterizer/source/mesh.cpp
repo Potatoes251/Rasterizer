@@ -152,14 +152,14 @@ Structures::Mesh* Structures::Mesh::createCube()
     Mesh* cubeMesh = new Mesh();
 
     static const Vertex coordinates[] = {
-    { +0.5, +0.5, -0.5, COLOR_GOLD}, // Back-top-right
-    {-0.5, +0.5, -0.5, COLOR_GOLD}, // Back-top-left
-    {+0.5, -0.5, -0.5, COLOR_GOLD}, // Back-bottom-right
-    {-0.5, -0.5, -0.5, COLOR_GOLD}, // Back-bottom-left
-    {-0.5, -0.5, +0.5, COLOR_GOLD}, // Front-bottom-left
-    {-0.5, +0.5, +0.5, COLOR_GOLD}, // Front-top-left
-    {+0.5, +0.5, +0.5, COLOR_GOLD}, // Front-top-right
-    {+0.5, -0.5, +0.5, COLOR_GOLD}, // Front-bottom-right
+    { +0.5, +0.5, -0.5, COLOR_RED}, // Back-top-right
+    {-0.5, +0.5, -0.5, COLOR_RED}, // Back-top-left
+    {+0.5, -0.5, -0.5, COLOR_RED}, // Back-bottom-right
+    {-0.5, -0.5, -0.5, COLOR_RED}, // Back-bottom-left
+    {-0.5, -0.5, +0.5, COLOR_RED}, // Front-bottom-left
+    {-0.5, +0.5, +0.5, COLOR_RED}, // Front-top-left
+    {+0.5, +0.5, +0.5, COLOR_RED}, // Front-top-right
+    {+0.5, -0.5, +0.5, COLOR_RED}, // Front-bottom-right
     };
 
     for (const auto& vertex : coordinates)

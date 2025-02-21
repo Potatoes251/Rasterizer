@@ -66,6 +66,27 @@ Structures::Color Structures::Rasterizer::getNearestTexel(Vertex v, Texture* tex
     return c;
 }
 
+Structures::Color Structures::Rasterizer::getTexelColor(Vertex v, Texture* tex)
+{
+    float xTex = v.m_u * (tex->m_width-1);
+    float yTex = v.m_v * (tex->m_height - 1);
+
+    int xMin = static_cast<int>(xTex);
+    int yMin = static_cast<int>(yTex);
+    int xMax = static_cast<int>(xTex) + 1;
+    int yMax = static_cast<int>(yTex) + 1;
+
+    Structures::Color colorBL = tex->m_pixels[(yMin * tex->m_width) + xMin];
+    Structures::Color colorBR = tex->m_pixels[(yMin * tex->m_width) + xMax];
+    Structures::Color colorTL = tex->m_pixels[(yMax * tex->m_width) + xMin];
+    Structures::Color colorTR = tex->m_pixels[(yMax * tex->m_width) + xMax];
+
+    Structures::Color colorBottom = colorBL * (xMax - xTex) + colorBR * (xTex - xMin);// interpolate bottom line
+    Structures::Color colorTop = colorTL * (xMax - xTex) + colorTR * (xTex - xMin);// interpolate top line
+
+    return colorBottom * (yMax - yTex) + colorTop * (yTex - yMin);
+}
+
 void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture)
 {
     float area = edgeFunction(v1, v2, v3);
@@ -98,7 +119,7 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
                 point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);
                 point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
 
-                point.m_color = getNearestTexel(point, objectTexture);
+                point.m_color = getTexelColor(point, objectTexture);
             }
             else
             {

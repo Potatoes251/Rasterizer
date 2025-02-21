@@ -32,7 +32,7 @@ int main(void)
         g_rotation += 0.05f;
         scene.m_entities[0].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 0.f, 2.f), 
                                                                             LibMath::Radian(g_rotation));
-        scene.m_entities[2].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 0.f),
+        scene.m_entities[2].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(-2.5f, 0.f, 2.f),
                                                                             LibMath::Radian(g_rotation));
         rasterizer.renderScene(&scene, &tex, g_wireframe);
 

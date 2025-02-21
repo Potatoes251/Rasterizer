@@ -16,7 +16,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     Structures::Mesh* cube = Structures::Mesh::createCube();
 
-    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(-0.5f, 0.f, 2.f)));
+    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 2.f)));
 
     scene.m_entities.push_back(entity);
 
@@ -29,7 +29,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
     Structures::Mesh* triangleMesh = new Structures::Mesh();
     *triangleMesh = Structures::Mesh({ v1, v2, v3 }, { 0, 1, 2 });
 
-    entity = Structures::Entity(triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(-3.f, 0.f, 2.f)));
+    entity = Structures::Entity(triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 0.f)));
 
     scene.m_entities.push_back(entity);
 
