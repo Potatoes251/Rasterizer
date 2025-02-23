@@ -41,7 +41,7 @@ namespace LibMath
 			}
 		};
 
-		RowProxy			operator[](size_t row) const;					// alternative for operator[][] overload
+		//RowProxy			operator[](size_t row) const;					// alternative for operator[][] overload
 		RowProxy			operator[](size_t row);
 
 		Matrix4				transpose(void) const;

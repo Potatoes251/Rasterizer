@@ -31,7 +31,12 @@ Structures::Color Structures::Color::operator+(Color other)
     return Color(m_r + other.m_r, m_g + other.m_g, m_b + other.m_b, m_a + other.m_a);
 }
 
-Structures::Color Structures::Color::operator*(float val)
+//Structures::Color Structures::Color::operator*(float val) const
+//{
+//    return Color(m_r * val, m_g * val, m_b * val, m_a * val);
+//}
+
+Structures::Color Structures::operator*(Color color, float val)
 {
-    return Color(m_r * val, m_g * val, m_b * val, m_a * val);
+    return Color(color.m_r * val, color.m_g * val, color.m_b * val, color.m_a * val);
 }

@@ -11,7 +11,7 @@ namespace Structures
 		Vertex() = default;
 		Vertex(float x, float y, float z, Structures::Color color = COLOR_WHITE);
 		Vertex(LibMath::Vector4 vec, Structures::Color color = COLOR_WHITE);
-		Vertex(LibMath::Vector3 vec, Structures::Color color = COLOR_WHITE);
+		Vertex(const LibMath::Vector3 vec, const Structures::Color color = COLOR_WHITE);
 
 		float operator[](int index); // return the x, y or z coordinate of the position
 
@@ -20,6 +20,8 @@ namespace Structures
 		LibMath::Vector3 m_position;
 		Structures::Color m_color;
 	};
+
+	
 }
 
 

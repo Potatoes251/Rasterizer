@@ -13,7 +13,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     Structures::Mesh* cube = Structures::Mesh::createCube();
 
-    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(2.5f, 5.f, -9.f)));
+    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(.0f, 0.0f, -1.1f)));
 
     scene.m_entities.push_back(entity);
 
@@ -32,17 +32,17 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     //// entity 3 : cube 2
 
-    entity = Structures::Entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, 2.f)));
+    //entity = Structures::Entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, 2.f)));
 
-    scene.m_entities.push_back(entity);
+    //scene.m_entities.push_back(entity);
 
-    //// entity 4: sphere
+    ////// entity 4: sphere
 
-    Structures::Mesh* sphereMesh = Structures::Mesh::createSphere();
+    //Structures::Mesh* sphereMesh = Structures::Mesh::createSphere();
 
-    entity = Structures::Entity(sphereMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f)));
+    //entity = Structures::Entity(sphereMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f)));
 
-    scene.m_entities.push_back(entity);
+    //scene.m_entities.push_back(entity);
 
     return scene;
 }

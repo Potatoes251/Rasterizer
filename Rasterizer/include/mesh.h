@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "vertex.h"
-
+#include "plan.h"
 namespace Structures
 {
 	struct Mesh
@@ -19,7 +19,9 @@ namespace Structures
 		std::vector<Vertex> m_vertices;
 		std::vector<int> m_indices;
 
-	};
+	}; 
+
+
 }
 
 

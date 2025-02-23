@@ -1,4 +1,4 @@
-#define _USE_MATH_DEFINES
+ï»¿#define _USE_MATH_DEFINES
 #ifndef _CMATH_
 #include <cmath>
 #endif // !_CMATH_
@@ -59,16 +59,16 @@ Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSe
     std::vector<Vertex> vertices;
     std::vector<int> indices;
 
-    // Génération des sommets
+    // GÃ©nÃ©ration des sommets
     for (int height = 0; height <= heightSegments; ++height)
     {
-        float theta = height * M_PI / heightSegments;  // De 0 à Pi
+        float theta = height * M_PI / heightSegments;  // De 0 Ã  Pi
         float sinTheta = sin(theta);
         float cosTheta = cos(theta);
 
         for (int width = 0; width <= widthSegments; ++width)
         {
-            float phi = width * 2.0f * M_PI / widthSegments;  // De 0 à 2Pi
+            float phi = width * 2.0f * M_PI / widthSegments;  // De 0 Ã  2Pi
             float sinPhi = sin(phi);
             float cosPhi = cos(phi);
 
@@ -82,7 +82,7 @@ Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSe
         }
     }
 
-    // Génération des indices
+    // GÃ©nÃ©ration des indices
     for (int height = 0; height < heightSegments; ++height)
     {
         for (int width = 0; width < widthSegments; ++width)
@@ -102,10 +102,4 @@ Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSe
 
     return new Mesh(vertices, indices);
 }
-
-
-
-
-
-
 

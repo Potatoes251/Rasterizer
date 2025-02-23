@@ -919,6 +919,8 @@ LibMath::Matrix4 LibMath::Matrix4::createTransform(LibMath::Vector3 translate, L
 	float pow2Y = powf(axis.getY(), 2.f);
 	float pow2Z = powf(axis.getZ(), 2.f);
 
+	axis.normalize();
+
 	return Matrix4(
 		scale.getX() * ((pow2X * k) + cosR), (axis.getX() * axis.getY() * k) - (axis.getZ() * sinR), (axis.getX() * axis.getZ() * k) + (axis.getY() * sinR), translate.getX(),
 		(axis.getX() * axis.getY() * k) + (axis.getZ() * sinR), scale.getY() * ((pow2Y * k) + cosR), (axis.getY() * axis.getZ() * k) - (axis.getX() * sinR), translate.getY(),

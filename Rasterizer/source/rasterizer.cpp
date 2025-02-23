@@ -1,50 +1,90 @@
+#define _USE_MATH_DEFINES
 #include "rasterizer.h"
 
-void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, LibMath::Matrix4 const& projectionMatrix, bool wireframe, float near, float far)
+void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const LibMath::Matrix4& projectionMatrix, LibMath::Matrix4 const& viewMatrix, bool wireframe)
 {
 
     Mesh transformedMesh;
 
     for each(Entity entity in pScene->m_entities)
     {
-        transformedMesh = entity.getTransformedMesh(projectionMatrix);
+        transformedMesh = entity.getTransformedMesh();
+
+        transformedMesh = Structures::Entity::getCameraProjectedMesh(transformedMesh, viewMatrix);
+
+        transformedMesh = Structures::Entity::getProjectedMesh(transformedMesh, projectionMatrix);
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
             int index1 = transformedMesh.m_indices[i];
-            float x1 = transformedMesh.m_vertices[index1].m_position.getX();
-            float y1 = transformedMesh.m_vertices[index1].m_position.getY();
-            int p_x1 = ((x1 / 5) + 1) * 0.5 * pTexture->m_width;
-            int p_y1 = pTexture->m_height - (((y1 / 5) + 1) * 0.5 * pTexture->m_height);
-            float p_z1 = transformedMesh.m_vertices[index1].m_position.getZ();
-
             int index2 = transformedMesh.m_indices[i + 1];
-            float x2 = transformedMesh.m_vertices[index2].m_position.getX();
-            float y2 = transformedMesh.m_vertices[index2].m_position.getY();
-            int p_x2 = ((x2 / 5) + 1) * 0.5 * pTexture->m_width;
-            int p_y2 = pTexture->m_height - (((y2 / 5) + 1) * 0.5 * pTexture->m_height);
-            float p_z2 = transformedMesh.m_vertices[index2].m_position.getZ();
-
             int index3 = transformedMesh.m_indices[i + 2];
-            float x3 = transformedMesh.m_vertices[index3].m_position.getX();
-            float y3 = transformedMesh.m_vertices[index3].m_position.getY();
-            int p_x3 = ((x3 / 5) + 1) * 0.5 * pTexture->m_width;
-            int p_y3 = pTexture->m_height - (((y3 / 5) + 1) * 0.5 * pTexture->m_height);
-            float p_z3 = transformedMesh.m_vertices[index3].m_position.getZ();
 
-            std::cout << "x1: " << x1 << " y1 : " << y1 << " z1: " << p_z1 << '\n';
+            std::vector<Vertex> triangle = {
+            Vertex(transformedMesh.m_vertices[index1].m_position, transformedMesh.m_vertices[index1].m_color),
+            Vertex(transformedMesh.m_vertices[index2].m_position, transformedMesh.m_vertices[index2].m_color),
+            Vertex(transformedMesh.m_vertices[index3].m_position, transformedMesh.m_vertices[index3].m_color)
+            };
 
-            if (wireframe)
-            {
-                drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
-                drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
-                drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
+            std::vector<Vertex> triangle2 = {
+  
+            Vertex({ +0.5, +0.5, -2.5}, transformedMesh.m_vertices[index1].m_color),
+            Vertex({-0.5, +0.5, -0.5}, transformedMesh.m_vertices[index2].m_color),
+            Vertex({+0.5, -0.5, -0.5}, transformedMesh.m_vertices[index3].m_color),
+//            Vertex({-0.5, -0.5, -0.5}, transformedMesh.m_vertices[index3].m_color)
+            };
+
+            std::cout << "Before Clipping: " << triangle.size() << " vertices\n";
+            for (auto& v : triangle) {
+                std::cout << "(" << v.m_position.getX() << ", " << v.m_position.getY() << ", " << v.m_position.getZ() << ")\n";
             }
+            // Clip the triangle against the NDC frustum
+            //std::vector<Vertex> clippedTriangle = clipToPlanes(triangle);
+            std::vector<Vertex> clippedTriangle = triangle;
 
-            else
-                fillTriangle(Structures::Vertex(p_x1, p_y1, p_z1, transformedMesh.m_vertices[index1].m_color),
-                    Structures::Vertex(p_x2, p_y2, p_z2, transformedMesh.m_vertices[index2].m_color),
-                    Structures::Vertex(p_x3, p_y3, p_z3, transformedMesh.m_vertices[index3].m_color), *pTexture);
+            std::cout << "After Clipping: " << clippedTriangle.size() << " vertices\n";
+
+            
+            
+            if (!clippedTriangle.empty())
+            {
+                float x1 = clippedTriangle[0].m_position.getX();
+                float y1 = clippedTriangle[0].m_position.getY();
+                int p_x1 = ((x1 / 5) + 1) * 0.5 * pTexture->m_width;
+                int p_y1 = pTexture->m_height - (((y1 / 5) + 1) * 0.5 * pTexture->m_height);
+                float p_z1 = clippedTriangle[0].m_position.getZ();
+
+
+                float x2 = clippedTriangle[1].m_position.getX();
+                float y2 = clippedTriangle[1].m_position.getY();
+                int p_x2 = ((x2 / 5) + 1) * 0.5 * pTexture->m_width;
+                int p_y2 = pTexture->m_height - (((y2 / 5) + 1) * 0.5 * pTexture->m_height);
+                float p_z2 = clippedTriangle[1].m_position.getZ();
+
+
+                float x3 = clippedTriangle[2].m_position.getX();
+                float y3 = clippedTriangle[2].m_position.getY();
+                int p_x3 = ((x3 / 5) + 1) * 0.5 * pTexture->m_width;
+                int p_y3 = pTexture->m_height - (((y3 / 5) + 1) * 0.5 * pTexture->m_height);
+                float p_z3 = clippedTriangle[2].m_position.getZ();
+
+                std::cout << "x1: " << x1 << " y1 : " << y1 << " z1: " << p_z1 << '\n';
+                std::cout << "p_x1: " << p_x1 << " p_y1 : " << p_y1 << " p_z1: " << p_z1 << '\n';
+
+                if (wireframe)
+                {
+                    drawLine(p_x1, p_y1, p_x2, p_y2, *pTexture);
+                    drawLine(p_x2, p_y2, p_x3, p_y3, *pTexture);
+                    drawLine(p_x1, p_y1, p_x3, p_y3, *pTexture);
+                }
+                else
+                {
+                    fillTriangle(Structures::Vertex(p_x1, p_y1, p_z1, clippedTriangle[0].m_color),
+                        Structures::Vertex(p_x2, p_y2, p_z2, clippedTriangle[1].m_color),
+                        Structures::Vertex(p_x3, p_y3, p_z3, clippedTriangle[2].m_color), *pTexture);
+                }
+            }
+                
         }
     }
 }
@@ -132,4 +172,36 @@ void Structures::Rasterizer::drawLine(int x0, int y0, int x1, int y1, Structures
             y0 += sy;
         }
     }
+}
+
+LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3 eye, float pitch, float yaw)
+{
+    // I assume the values are already converted to radians.
+    float cosPitch = cos(pitch);
+    float sinPitch = sin(pitch);
+    float cosYaw = cos(yaw);
+    float sinYaw = sin(yaw);
+
+    LibMath::Vector3 xaxis = { cosYaw, 0, -sinYaw };
+    LibMath::Vector3 yaxis = { sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
+    LibMath::Vector3 zaxis = { sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw };
+
+    float dotXAxis = xaxis.dot(eye);
+    float dotYAxis = yaxis.dot(eye);
+    float dotZaxis = zaxis.dot(eye);
+
+    // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+    return LibMath::Matrix4(
+        xaxis.getX(), yaxis.getX(), zaxis.getX(), 0,
+        xaxis.getY(), yaxis.getY(), zaxis.getY(), 0,
+        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), 0,
+        -dotXAxis,    -dotYAxis,    -dotZaxis,    1 
+    );
+}
+
+LibMath::Vector2 Structures::inputManager(void)
+{
+    float angleX = 0.f;
+    float angleY = 0.f;
+    return LibMath::Vector2();
 }

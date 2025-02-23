@@ -23,37 +23,64 @@ Structures::Entity& Structures::Entity::operator=(Entity const& other)
     return *this;
 }
 
-Structures::Mesh Structures::Entity::getTransformedMesh(LibMath::Matrix4 projectionMatrix)
+Structures::Mesh Structures::Entity::getTransformedMesh(void)
 {
     Mesh transformed;
     LibMath::Vector4 temp;
-    LibMath::Matrix4 rowMajor = projectionMatrix;
 
     transformed.m_indices = m_mesh->m_indices;
 
     for each(Structures::Vertex vertex in m_mesh->m_vertices)
-    {
-        temp = LibMath::Vector4(vertex.m_position, 1.0f);
+    { // optimize later
+        temp = LibMath::Vector4(vertex.m_position, 1.f);
 
-        temp =  rowMajor * (m_transform * temp);
+        temp = (m_transform * temp);
 
-        temp.homogenize();
-
+        //std::cout << "x: " << temp.getX() << " y: " << temp.getY() << " z: " << temp.getZ() << " k: " << temp.getK() << '\n';
         transformed.m_vertices.push_back(Structures::Vertex(temp, vertex.m_color));
     }
 
     return transformed;
 }
 
-LibMath::Vector4 Structures::Entity::projectMesh(LibMath::Vector4 transformedMeshPosition, LibMath::Matrix4 projectionMatrix)
+Structures::Mesh Structures::Entity::getProjectedMesh(Mesh transformedMesh, LibMath::Matrix4 projectionMatrix)
 {
-    LibMath::Vector4 tempMeshPosition = LibMath::Vector4(transformedMeshPosition);
+    Structures::Mesh projectedMesh;
 
-    LibMath::Matrix4 rowMajor = projectionMatrix.transpose();
+    projectedMesh.m_indices = transformedMesh.m_indices;
 
-    tempMeshPosition = rowMajor * tempMeshPosition;
+    for each(Structures::Vertex vertex in transformedMesh.m_vertices)
+    {
+        LibMath::Vector4 temp(vertex.m_position, 1.0f);
 
-    tempMeshPosition.homogenize();
+        temp = projectionMatrix * temp;
 
-    return tempMeshPosition;
+        temp.homogenize();
+
+        //std::cout << "x: " << temp.getX() << " y: " << temp.getY() << " z: " << temp.getZ() << " k: " << temp.getK() << '\n';
+        projectedMesh.m_vertices.push_back(Structures::Vertex(temp, vertex.m_color));
+    }
+
+    return projectedMesh;
+}
+
+Structures::Mesh Structures::Entity::getCameraProjectedMesh(Mesh transformedMesh, LibMath::Matrix4 viewMatrix)
+{
+    Structures::Mesh viewMesh;
+
+    viewMesh.m_indices = transformedMesh.m_indices;
+
+    for each(Structures::Vertex vertex in transformedMesh.m_vertices)
+    {
+        LibMath::Vector4 temp(vertex.m_position, 1.0f);
+
+        temp = viewMatrix * temp;
+
+        temp.homogenize();
+
+        //std::cout << "x: " << temp.getX() << " y: " << temp.getY() << " z: " << temp.getZ() << " k: " << temp.getK() << '\n';
+        viewMesh.m_vertices.push_back(Structures::Vertex(temp, vertex.m_color));
+    }
+
+    return viewMesh;
 }
