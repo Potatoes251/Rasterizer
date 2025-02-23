@@ -1,30 +1,27 @@
 #include "entity.h"
 
-Structures::Entity::Entity(Mesh* mesh, LibMath::Matrix4 transform, Texture* tex)
+Structures::Entity::Entity(Mesh* mesh, LibMath::Matrix4 transform, Texture* tex, float alpha)
 {
     m_mesh = mesh;
-
     m_transform = transform;
-
     m_texture = tex;
+    m_alpha = alpha;
 }
 
 Structures::Entity::Entity(Entity const& other)
 {
     m_mesh = other.m_mesh;
-
     m_transform = other.m_transform;
-
     m_texture = other.m_texture;
+    m_alpha = other.m_alpha;
 }
 
 Structures::Entity& Structures::Entity::operator=(Entity const& other)
 {
     m_mesh = other.m_mesh;
-
     m_transform = other.m_transform;
-
     m_texture = other.m_texture;
+    m_alpha = other.m_alpha;
 
     return *this;
 }
@@ -53,7 +50,7 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
         result.m_normal = LibMath::Vector3 (temp.getX(), temp.getY(), temp.getZ());
         result.m_u = vertex.m_u;
         result.m_v = vertex.m_v;
-
+        result.m_color.m_a *= m_alpha;
         transformed.m_vertices.push_back(result);
     }
 

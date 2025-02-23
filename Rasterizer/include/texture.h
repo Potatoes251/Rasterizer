@@ -13,7 +13,7 @@ namespace Structures
 		Texture(char const* texture);
 
 		void clearTexture(const Color& c = COLOR_BLACK);
-		void setPixelColor(unsigned int x, unsigned int y, const Color& c = COLOR_WHITE);
+		void setPixelColor(unsigned int x, unsigned int y, const Color& c = COLOR_WHITE, float alpha = 1.f);
 
 		void drawTexture() const;
 

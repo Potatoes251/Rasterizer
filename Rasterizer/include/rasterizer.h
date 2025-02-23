@@ -15,7 +15,7 @@ namespace Structures
 		Color getNearestTexel(Vertex v, Texture* tex);
 		Color getTexelColor(Vertex v, Texture* tex);	// get the color of the pixel to draw by using bilenear filtering
 
-		void fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture);
+		void fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture, float alpha);
 
 		void drawLine(Vertex v1, Vertex v2, Texture& tex);
 

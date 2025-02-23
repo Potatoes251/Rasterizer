@@ -920,9 +920,9 @@ LibMath::Matrix4 LibMath::Matrix4::createTransform(LibMath::Vector3 translate, L
 	float pow2Z = powf(axis.getZ(), 2.f);
 
 	return Matrix4(
-		scale.getX() * ((pow2X * k) + cosR), (axis.getX() * axis.getY() * k) - (axis.getZ() * sinR), (axis.getX() * axis.getZ() * k) + (axis.getY() * sinR), translate.getX(),
-		(axis.getX() * axis.getY() * k) + (axis.getZ() * sinR), scale.getY() * ((pow2Y * k) + cosR), (axis.getY() * axis.getZ() * k) - (axis.getX() * sinR), translate.getY(),
-		(axis.getX() * axis.getZ() * k) - (axis.getY() * sinR), (axis.getY() * axis.getZ() * k) + (axis.getX() * sinR), scale.getZ() * ((pow2Z * k) + cosR), translate.getZ(),
+		scale.getX() * ((pow2X * k) + cosR), scale.getX() * (axis.getX() * axis.getY() * k) - (axis.getZ() * sinR), scale.getX() * (axis.getX() * axis.getZ() * k) + (axis.getY() * sinR), translate.getX(),
+		scale.getY() * (axis.getX() * axis.getY() * k) + (axis.getZ() * sinR), scale.getY() * ((pow2Y * k) + cosR), scale.getY() * (axis.getY() * axis.getZ() * k) - (axis.getX() * sinR), translate.getY(),
+		scale.getZ() * (axis.getX() * axis.getZ() * k) - (axis.getY() * sinR), scale.getZ() * (axis.getY() * axis.getZ() * k) + (axis.getX() * sinR), scale.getZ() * ((pow2Z * k) + cosR), translate.getZ(),
 		0.f, 0.f, 0.f, 1.f
 	);
 }

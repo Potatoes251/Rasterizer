@@ -54,9 +54,22 @@ void Structures::Texture::clearTexture(const Color& c)
     }
 }
 
-void Structures::Texture::setPixelColor(unsigned int x, unsigned int y, const Color& c)
+void Structures::Texture::setPixelColor(unsigned int x, unsigned int y, const Color& c, float alpha)
 {
-    m_pixels[(y * m_width) + x] = c;
+    Structures::Color finalColor;
+    if (alpha != 1.f)
+    {
+        Structures::Color backgroundColor = m_pixels[(y * m_width) + x];
+        finalColor.m_r = backgroundColor.m_r * (1 - alpha) + c.m_r * alpha;
+        finalColor.m_g = backgroundColor.m_g * (1 - alpha) + c.m_g * alpha;
+        finalColor.m_b = backgroundColor.m_b * (1 - alpha) + c.m_b * alpha;
+        finalColor.m_a = alpha + backgroundColor.m_a * (1 - alpha);
+    }
+    else
+    {
+        finalColor = c;
+    }
+    m_pixels[(y * m_width) + x] = finalColor;
 }
 
 void Structures::Texture::drawTexture() const

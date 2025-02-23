@@ -59,7 +59,9 @@ float Structures::Vertex::calculateSpecular(Structures::Light light, Structures:
 
 void Structures::Vertex::calculateLighting(Structures::Light light, Structures::Vertex viewPoint)
 {
+    unsigned char alpha = m_color.m_a;
     m_color = m_color * light.m_ambient + m_color * calculatediffuse(light) + m_color * calculateSpecular(light, viewPoint);
+    m_color.m_a = alpha;
 }
 
 void Structures::Vertex::setColor(Color color)

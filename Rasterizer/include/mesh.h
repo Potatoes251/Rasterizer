@@ -13,14 +13,14 @@ namespace Structures
 		Mesh(std::vector<Vertex> vertices, std::vector<int> indices);
 		Mesh();
 
-		static Mesh* createCube(Texture* tex);
-		static Mesh* createCube();
+		static Mesh* createCube(Texture* tex, Structures::Color color);
+		static Mesh* createCube(Structures::Color color);
 		static void setCubeNormals(Mesh* cubeMesh);
 
 		std::vector<Vertex> m_vertices;
 		std::vector<int> m_indices;
 
-		Texture* pTexture = nullptr;
+		Texture* m_texture = nullptr;
 	};
 }
 

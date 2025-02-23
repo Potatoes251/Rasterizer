@@ -38,7 +38,7 @@ namespace Structures
 
 		unsigned char m_b = 0;
 
-		unsigned char m_a = 0;
+		unsigned char m_a = 255;
 
 	};
 }

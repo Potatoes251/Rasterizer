@@ -17,15 +17,17 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             int index2 = transformedMesh.m_indices[i + 1];
 
             int index3 = transformedMesh.m_indices[i + 2];
-
+            
             if (wireframe)
             {
                 drawLine(projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height), 
                  projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height), 
                  *pTexture);
+
                 drawLine(projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height), 
                  projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
                  *pTexture);
+
                 drawLine(projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height), 
                  projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
                  *pTexture);
@@ -36,7 +38,7 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
                     projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height),
                     projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height),
                     projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
-                    *pTexture, pScene->m_entities[j].m_mesh->pTexture);
+                    *pTexture, pScene->m_entities[j].m_mesh->m_texture, pScene->m_entities[j].m_alpha);
         }
     }
 }
@@ -48,8 +50,8 @@ float Structures::Rasterizer::edgeFunction(Vertex v1, Vertex v2, Vertex v3)
 
 Structures::Color Structures::Rasterizer::getNearestTexel(Vertex v, Texture* tex)
 {
-    float xTex = v.m_u * tex->m_width;
-    float yTex = v.m_v * tex->m_height;
+    float xTex = v.m_u * (tex->m_width - 1);
+    float yTex = v.m_v * (tex->m_height - 1);
 
     int x = static_cast<int>(xTex);
     int y = static_cast<int>(yTex);
@@ -67,8 +69,8 @@ Structures::Color Structures::Rasterizer::getNearestTexel(Vertex v, Texture* tex
 }
 
 Structures::Color Structures::Rasterizer::getTexelColor(Vertex v, Texture* tex)
-{
-    float xTex = v.m_u * (tex->m_width-1);
+{// bilinear interpolation
+    float xTex = v.m_u * (tex->m_width - 1);
     float yTex = v.m_v * (tex->m_height - 1);
 
     int xMin = static_cast<int>(xTex);
@@ -84,10 +86,10 @@ Structures::Color Structures::Rasterizer::getTexelColor(Vertex v, Texture* tex)
     Structures::Color colorBottom = colorBL * (xMax - xTex) + colorBR * (xTex - xMin);// interpolate bottom line
     Structures::Color colorTop = colorTL * (xMax - xTex) + colorTR * (xTex - xMin);// interpolate top line
 
-    return colorBottom * (yMax - yTex) + colorTop * (yTex - yMin);
+    return colorBottom * (yMax - yTex) + colorTop * (yTex - yMin);// interpolate between top and bottom
 }
 
-void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture)
+void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture, float alphaEntity)
 {
     float area = edgeFunction(v1, v2, v3);
 
@@ -110,7 +112,7 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             float alpha = edgeFunction(v1, v2, point) / area;
             float beta = edgeFunction(v2, v3, point) / area;
             float gamma = edgeFunction(v3, v1, point) / area;
-            if (alpha < 0 || beta < 0 || gamma < 0) continue;
+            if (alpha < 0 || beta < 0 || gamma < 0 || alpha + beta + gamma - 1 >= 0.0005) continue;
             
             point.m_normal = LibMath::Vector3(v3.m_normal * alpha + v1.m_normal * beta + v2.m_normal * gamma);
             point.m_normal.normalize();
@@ -119,14 +121,18 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
                 point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);
                 point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
 
+                //point.m_color = getNearestTexel(point, objectTexture);
                 point.m_color = getTexelColor(point, objectTexture);
+
+                //std::cout << static_cast<int>(point.m_color.m_a) << '\n';
             }
             else
             {
                 point.m_color = Structures::Color(v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma);
+                point.m_color.m_a = 255;
             }
             point.calculateLighting(Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3::zero()), Structures::Vertex(0, 0, 1));
-            sceneTexture.setPixelColor(i, j, point.m_color);
+            sceneTexture.setPixelColor(i, j, point.m_color, alphaEntity);
         }
     }
 }

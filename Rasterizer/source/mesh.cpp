@@ -8,49 +8,49 @@ Structures::Mesh::Mesh(std::vector<Vertex> vertices, std::vector<int> indices)
 
 Structures::Mesh::Mesh() {}
 
-Structures::Mesh* Structures::Mesh::createCube(Texture* tex)
+Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color color)
 {
     Mesh* cubeMesh = new Mesh();
 
-    cubeMesh->pTexture = tex;
+    cubeMesh->m_texture = tex;
 
     // Define the vertices of the cube with texture coordinates
     static const Vertex coordinates[] = {
         // Back face
-        { +0.5, +0.5, -0.5, 1.0f, 1.0f, COLOR_GOLD}, // Top-right
-        {-0.5, +0.5, -0.5, 0.0f, 1.0f, COLOR_GOLD}, // Top-left
-        {+0.5, -0.5, -0.5, 1.0f, 0.0f, COLOR_GOLD}, // Bottom-right
-        {-0.5, -0.5, -0.5, 0.0f, 0.0f, COLOR_GOLD}, // Bottom-left
+        { +0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // Top-right
+        {-0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // Top-left
+        {+0.5, -0.5, -0.5, 1.0f, 0.0f, color}, // Bottom-right
+        {-0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // Bottom-left
 
         // Front face
-        {-0.5, -0.5, +0.5, 0.0f, 0.0f, COLOR_GOLD}, // Bottom-left
-        {-0.5, +0.5, +0.5, 0.0f, 1.0f, COLOR_GOLD}, // Top-left
-        {+0.5, +0.5, +0.5, 1.0f, 1.0f, COLOR_GOLD}, // Top-right
-        {+0.5, -0.5, +0.5, 1.0f, 0.0f, COLOR_GOLD}, // Bottom-right
+        {-0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // Bottom-left
+        {-0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // Top-left
+        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // Top-right
+        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // Bottom-right
 
         // Left face
-        {-0.5, +0.5, -0.5, 1.0f, 1.0f, COLOR_GOLD}, // Top-right
-        {-0.5, +0.5, +0.5, 0.0f, 1.0f, COLOR_GOLD}, // Top-left
-        {-0.5, -0.5, -0.5, 1.0f, 0.0f, COLOR_GOLD}, // Bottom-right
-        {-0.5, -0.5, +0.5, 0.0f, 0.0f, COLOR_GOLD}, // Bottom-left
+        {-0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // Top-right
+        {-0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // Top-left
+        {-0.5, -0.5, -0.5, 1.0f, 0.0f, color}, // Bottom-right
+        {-0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // Bottom-left
 
         // Right face
-        {+0.5, +0.5, -0.5, 0.0f, 1.0f, COLOR_GOLD}, // Top-right
-        {+0.5, +0.5, +0.5, 1.0f, 1.0f, COLOR_GOLD}, // Top-left
-        {+0.5, -0.5, -0.5, 0.0f, 0.0f, COLOR_GOLD}, // Bottom-right
-        {+0.5, -0.5, +0.5, 1.0f, 0.0f, COLOR_GOLD}, // Bottom-left
+        {+0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // Top-right
+        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // Top-left
+        {+0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // Bottom-right
+        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // Bottom-left
 
         // Top face
-        {+0.5, +0.5, +0.5, 0.0f, 1.0f, COLOR_GOLD}, // Top-right
-        {-0.5, +0.5, +0.5, 1.0f, 1.0f, COLOR_GOLD}, // Top-left
-        {+0.5, +0.5, -0.5, 0.0f, 0.0f, COLOR_GOLD}, // Bottom-right
-        {-0.5, +0.5, -0.5, 1.0f, 0.0f, COLOR_GOLD}, // Bottom-left
+        {+0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // Top-right
+        {-0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // Top-left
+        {+0.5, +0.5, -0.5, 0.0f, 0.0f, color}, // Bottom-right
+        {-0.5, +0.5, -0.5, 1.0f, 0.0f, color}, // Bottom-left
 
         // Bottom face
-        {+0.5, -0.5, -0.5, 0.0f, 1.0f, COLOR_GOLD}, // Top-right
-        {-0.5, -0.5, -0.5, 1.0f, 1.0f, COLOR_GOLD}, // Top-left
-        {+0.5, -0.5, +0.5, 0.0f, 0.0f, COLOR_GOLD}, // Bottom-right
-        {-0.5, -0.5, +0.5, 1.0f, 0.0f, COLOR_GOLD}, // Bottom-left
+        {+0.5, -0.5, -0.5, 0.0f, 1.0f, color}, // Top-right
+        {-0.5, -0.5, -0.5, 1.0f, 1.0f, color}, // Top-left
+        {+0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // Bottom-right
+        {-0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // Bottom-left
     };
 
     // Add the vertices to the mesh (with texture coordinates)
@@ -81,7 +81,17 @@ Structures::Mesh* Structures::Mesh::createCube(Texture* tex)
         22, 23, 21
     };
 
-    setCubeNormals(cubeMesh);
+    //setCubeNormals(cubeMesh);
+
+    Vertex v1;
+
+    for (size_t i = 0; i < cubeMesh->m_vertices.size(); ++i)
+    {
+        v1 = cubeMesh->m_vertices[i];
+
+        cubeMesh->m_vertices[i].m_normal = LibMath::Vector3(2 * v1[0], 2 * v1[1], 2 * v1[2]);
+        cubeMesh->m_vertices[i].m_normal.normalize();
+    }
 
     return cubeMesh;
 }
@@ -142,24 +152,52 @@ void Structures::Mesh::setCubeNormals(Mesh* cubeMesh)
     {
         cubeMesh->m_vertices[i].m_normal.normalize();
     }
+
+
+    //// Calculate the normals for each vertex
+    //Vertex v1, v2, v3;
+    //LibMath::Vector3 v1v2;
+    //LibMath::Vector3 v1v3;
+    //LibMath::Vector3 normal;
+    //std::vector<LibMath::Vector3> vertexNormals(cubeMesh->m_vertices.size(), LibMath::Vector3(0.0f, 0.0f, 0.0f));
+    //    
+    //for (int i = 0; i < cubeMesh->m_indices.size(); i += 3)
+    //{
+    //    v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]];
+    //    v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]];
+    //    v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]];
+
+    //    v1v3 = v3.m_position - v1.m_position;
+    //    v1v2 = v2.m_position - v1.m_position;
+
+    //    normal = v1v2.cross(v1v3);
+
+    //    cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal = normal;
+    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal = normal;
+    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal = normal;
+
+    //    cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal.normalize();
+    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal.normalize();
+    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal.normalize();
+    //}
 }
 
 
 
 
-Structures::Mesh* Structures::Mesh::createCube()
+Structures::Mesh* Structures::Mesh::createCube(Structures::Color color)
 {
     Mesh* cubeMesh = new Mesh();
 
-    static const Vertex coordinates[] = {
-    { +0.5, +0.5, -0.5, COLOR_RED}, // Back-top-right
-    {-0.5, +0.5, -0.5, COLOR_RED}, // Back-top-left
-    {+0.5, -0.5, -0.5, COLOR_RED}, // Back-bottom-right
-    {-0.5, -0.5, -0.5, COLOR_RED}, // Back-bottom-left
-    {-0.5, -0.5, +0.5, COLOR_RED}, // Front-bottom-left
-    {-0.5, +0.5, +0.5, COLOR_RED}, // Front-top-left
-    {+0.5, +0.5, +0.5, COLOR_RED}, // Front-top-right
-    {+0.5, -0.5, +0.5, COLOR_RED}, // Front-bottom-right
+    const Vertex coordinates[] = {
+    {+0.5, +0.5, -0.5, color}, // Back-top-right
+    {-0.5, +0.5, -0.5, color}, // Back-top-left
+    {+0.5, -0.5, -0.5, color}, // Back-bottom-right
+    {-0.5, -0.5, -0.5, color}, // Back-bottom-left
+    {-0.5, -0.5, +0.5, color}, // Front-bottom-left
+    {-0.5, +0.5, +0.5, color}, // Front-top-left
+    {+0.5, +0.5, +0.5, color}, // Front-top-right
+    {+0.5, -0.5, +0.5, color}, // Front-bottom-right
     };
 
     for (const auto& vertex : coordinates)
@@ -182,38 +220,15 @@ Structures::Mesh* Structures::Mesh::createCube()
         3, 7, 4 // bottom trianlge2
     };
 
-    Vertex v1, v2, v3;
+    Vertex v1;
 
-    LibMath::Vector3 v1v2;
-    LibMath::Vector3 v1v3;
-    LibMath::Vector3 normal;
-
-    for (size_t i = 0; i < cubeMesh->m_indices.size(); i += 3)
+    for (size_t i = 0; i < cubeMesh->m_vertices.size(); ++i)
     {
-        v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]];
-        v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]];
-        v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]];
-
-        v1v3 = v3.m_position - v1.m_position;
-        v1v2 = v2.m_position - v1.m_position;
-
-        normal = v1v2.cross(v1v3);
-
-        cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal += normal;
-        cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal += normal;
-        cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal += normal;
-    }
-
-    for (size_t i = 0; i < cubeMesh->m_vertices.size(); i++)
-    {
+        v1 = cubeMesh->m_vertices[i];
+    
+        cubeMesh->m_vertices[i].m_normal = LibMath::Vector3(2*v1[0], 2*v1[1], 2*v1[2]);
         cubeMesh->m_vertices[i].m_normal.normalize();
     }
 
     return cubeMesh;
 }
-
-
-
-
-
-
