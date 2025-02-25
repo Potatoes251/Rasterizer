@@ -24,40 +24,40 @@ Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color c
     // Define the vertices of the cube with texture coordinates
     const Vertex coordinates[] = {
         // Back face
-        { +0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // Top-right
-        {-0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // Top-left
-        {+0.5, -0.5, -0.5, 1.0f, 0.0f, color}, // Bottom-right
-        {-0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // Bottom-left
+        { +0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // back-top-right
+        {-0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // back-top-left
+        {+0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // back-bottom-right
+        {-0.5, -0.5, -0.5, 1.0f, 0.0f, color}, // back-bottom-left
 
         // Front face
-        {-0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // Bottom-left
-        {-0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // Top-left
-        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // Top-right
-        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // Bottom-right
+        {-0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // front-bottom-left
+        {-0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // front-top-left
+        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // front-top-right
+        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // front-bottom-right
 
         // Left face
-        {-0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // Top-right
-        {-0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // Top-left
-        {-0.5, -0.5, -0.5, 1.0f, 0.0f, color}, // Bottom-right
-        {-0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // Bottom-left
+        {-0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // back-top-left
+        {-0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // front-top-left
+        {-0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // back-bottom-left
+        {-0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // front-bottom-left
 
         // Right face
-        {+0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // Top-right
-        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // Top-left
-        {+0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // Bottom-right
-        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // Bottom-left
+        {+0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // back-top-right
+        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // front-top-right
+        {+0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // back-bottom-right
+        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // front-bottom-right
 
         // Top face
-        {+0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // Top-right
-        {-0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // Top-left
-        {+0.5, +0.5, -0.5, 0.0f, 0.0f, color}, // Bottom-right
-        {-0.5, +0.5, -0.5, 1.0f, 0.0f, color}, // Bottom-left
+        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // front-top-right
+        {-0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // front-top-left
+        {+0.5, +0.5, -0.5, 1.0f, 0.0f, color}, // back-top-right
+        {-0.5, +0.5, -0.5, 0.0f, 0.0f, color}, // back-top-left
 
         // Bottom face
-        {+0.5, -0.5, -0.5, 0.0f, 1.0f, color}, // Top-right
-        {-0.5, -0.5, -0.5, 1.0f, 1.0f, color}, // Top-left
-        {+0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // Bottom-right
-        {-0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // Bottom-left
+        {+0.5, -0.5, -0.5, 0.0f, 1.0f, color}, // back-bottom-right
+        {-0.5, -0.5, -0.5, 1.0f, 1.0f, color}, // back-bottom-left
+        {+0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // front-bottom-right
+        {-0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // front-bottom-left
     };
 
     // Add the vertices to the mesh (with texture coordinates)

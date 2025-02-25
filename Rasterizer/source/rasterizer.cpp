@@ -26,24 +26,26 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
             Vertex(transformedMesh.m_vertices[index2].m_position, transformedMesh.m_vertices[index2].m_color),
             Vertex(transformedMesh.m_vertices[index3].m_position, transformedMesh.m_vertices[index3].m_color)
             };
-
+            
             /*std::cout << "Before Clipping: " << triangle.size() << " vertices\n";
             for (auto& v : triangle) {
                 std::cout << "(" << v.m_position.getX() << ", " << v.m_position.getY() << ", " << v.m_position.getZ() << ")\n";
             }*/
             //// Clip the triangle against the NDC frustum
-            std::vector<std::vector<Vertex>> Triangles = clipToPlanes(triangle);
+            std::vector<std::vector<Vertex>> Triangles = clipToPlanes(transformedMesh.m_vertices[index1],
+                                                                        transformedMesh.m_vertices[index2],
+                                                                        transformedMesh.m_vertices[index3]);
             //std::vector<Vertex> clippedTriangle = triangle;
 
             //std::cout << "After clipping : " << Triangles.size() << std::endl;
 
             for each(std::vector<Vertex> clippedTriangle in Triangles)
             {
-                Vertex v1 = projectVertex(clippedTriangle[0], pTexture->m_width, pTexture->m_height);
-                Vertex v2 = projectVertex(clippedTriangle[1], pTexture->m_width, pTexture->m_height);
+                Vertex v1 = projectVertex(clippedTriangle[1], pTexture->m_width, pTexture->m_height);
+                Vertex v2 = projectVertex(clippedTriangle[0], pTexture->m_width, pTexture->m_height);
                 Vertex v3 = projectVertex(clippedTriangle[2], pTexture->m_width, pTexture->m_height);
 
-                if (edgeFunction(v1, v2, v3) < 0) continue;
+                if (edgeFunction(v1, v2, v3) < 0) continue; // back face culling
 
                 if (wireframe)
                 {
@@ -57,7 +59,6 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
                     fillTriangle(v1, v2, v3, *pTexture,
                         entity.m_mesh->m_texture, entity.m_alpha, pScene->m_lights);
             }
-            
         }
     }
 }
@@ -112,13 +113,11 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
 {
     float area = edgeFunction(v1, v2, v3);
 
-    if (area < 0) return;   // back face culling
+    int xMin = std::min(std::min(v1[0], v2[0]), v3[0]); // set the bounding box of the triangle
+    int xMax = std::max(std::max(v1[0], v2[0]), v3[0]);
 
-    int xMin = std::max(0.f, std::min(std::min(v1[0], v2[0]), v3[0])); // set the bounding box of the triangle
-    int xMax = std::min(static_cast<float>(sceneTexture.m_width), std::max(std::max(v1[0], v2[0]), v3[0]));
-
-    int yMin = std::max(0.f, std::min(std::min(v1[1], v2[1]), v3[1]));
-    int yMax = std::min(static_cast<float>(sceneTexture.m_height), std::max(std::max(v1[1], v2[1]), v3[1]));
+    int yMin = std::min(std::min(v1[1], v2[1]), v3[1]);
+    int yMax = std::max(std::max(v1[1], v2[1]), v3[1]);
 
     float zMax = (v1[2] > v2[2]) ? v1[2] : v2[2];
     zMax = (v3[2] > zMax) ? v3[2] : zMax;
@@ -241,9 +240,9 @@ LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float
 
 
     LibMath::Matrix4 ViewMatrix(
-        xaxis.getX(), yaxis.getX(), zaxis.getX(), dotXAxis,
-        xaxis.getY(), yaxis.getY(), zaxis.getY(), dotYAxis,
-        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), dotZAxis,
+        xaxis.getX(), yaxis.getX(), zaxis.getX(), -dotXAxis,
+        xaxis.getY(), yaxis.getY(), zaxis.getY(), -dotYAxis,
+        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), -dotZAxis,
              0,            0,            0,           1
     );
 
@@ -331,8 +330,8 @@ Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, 
 {// project vertex on a 2D plane
     float x = v.m_position.getX();
     float y = v.m_position.getY();
-    int p_x = ((x / 1) + 1) * 0.5 * width;
-    int p_y = height - (((y / 1) + 1) * 0.5 * height);
+    int p_x = ((x / 1.005) + 1) * 0.5 * width;
+    int p_y = height - (((y / 1.005) + 1) * 0.5 * height);
 
     Structures::Vertex projectedVertex(p_x, p_y, 0, v.m_color);
     projectedVertex.m_normal = v.m_normal;

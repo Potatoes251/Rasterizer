@@ -95,11 +95,11 @@ std::vector<Structures::Vertex> Structures::clipToPlane(const std::vector<Vertex
     return clippedPolygone;
 }
 
-std::vector<std::vector<Structures::Vertex>> Structures::clipToPlanes(const std::vector<Vertex>& polygone)
+std::vector<std::vector<Structures::Vertex>> Structures::clipToPlanes(Vertex& v1, Vertex& v2, Vertex& v3)
 {
 
     // Convert vertices to clip space
-    std::vector<Vertex> input = { polygone[0], polygone[1], polygone[2]};
+    std::vector<Vertex> input = { v1, v2, v3};
     std::vector<Vertex> output;
 
     std::vector<Plane> planes = {
@@ -150,9 +150,9 @@ std::vector<std::vector<Structures::Vertex>> Structures::clipToPlanes(const std:
                 //intersection.m_color = current.m_color;
 
                 intersection.m_color = current.m_color + (next.m_color - current.m_color) * t;
-                //intersection.m_normal = current.m_normal + (next.m_normal - current.m_normal) * t;
-                /*intersection.m_u = current.m_u + (next.m_u - current.m_u) * t;
-                intersection.m_v = current.m_v + (next.m_v - current.m_v) * t;*/
+                intersection.m_normal = current.m_normal + (next.m_normal - current.m_normal) * t;
+                intersection.m_u = current.m_u + (next.m_u - current.m_u) * t;
+                intersection.m_v = current.m_v + (next.m_v - current.m_v) * t;
 
                 output.push_back(intersection);
             }
