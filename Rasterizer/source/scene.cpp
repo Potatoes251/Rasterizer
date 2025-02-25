@@ -16,9 +16,9 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     Structures::Mesh* cube = Structures::Mesh::createCube(nullptr, COLOR_GOLD);
 
-    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(3.f, 0.f, -2.f)));
+    Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 0.f)));
     entity.m_alpha = 1.f;
-    scene.m_entities.push_back(entity);
+    //scene.m_entities.push_back(entity);
 
     //// entity 2 : rainbowish triangle
 
@@ -27,21 +27,21 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
     //Structures::Vertex v3(0.0f, 0.5f, 0.0f, COLOR_BLUE);
 
     //Structures::Mesh* triangleMesh = new Structures::Mesh();
-    //*triangleMesh = Structures::Mesh({ v1, v2, v3 }, { 0, 1, 2 });
+    ////*triangleMesh = Structures::Mesh({ v1, v2, v3 }, { 0, 1, 2 });
 
-    triangleMesh->setNormalsFace(triangleMesh);
+    //triangleMesh->setNormalsFace(triangleMesh);
 
-    for (int i = 0; i < 3; ++i)
-    {
-        triangleMesh->m_vertices[i].m_normal = LibMath::Vector3(0,0,1);
-        triangleMesh->m_vertices[i].m_normal.normalize();
-    }
+    //for (int i = 0; i < 3; ++i)
+    //{
+    //    triangleMesh->m_vertices[i].m_normal = LibMath::Vector3(0,0,1);
+    //    triangleMesh->m_vertices[i].m_normal.normalize();
+    //}
 
-    entity = Structures::Entity(triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, -1.f, -2.f)), nullptr, 0.5f);
-    entity.m_alpha = 1.f;
-    scene.m_entities.push_back(entity);
-    
-    // entity 3 : textured cube
+    //entity = Structures::Entity(triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, -1.f, -2.f)), nullptr, 0.5f);
+    //entity.m_alpha = 1.f;
+    //scene.m_entities.push_back(entity);
+    //
+    //// entity 3 : textured cube
 
     Structures::Texture* cubeTexture = new Structures::Texture("../../Rasterizer/include/container.png");
 
@@ -49,9 +49,9 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     entity = Structures::Entity(cube2, LibMath::Matrix4::createTransform(LibMath::Vector3(-1.5f, 0.f, -2.f)));
     entity.m_alpha = 1.f;
-    scene.m_entities.push_back(entity);
+    //scene.m_entities.push_back(entity);
 
-    // entity 4 : cube behind next cube
+    //// entity 4 : cube behind next cube
 
     Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_MAGENTA);
 
@@ -59,22 +59,22 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
                                                                         LibMath::Radian(),
                                                                         LibMath::Vector3(2.f, 2.f, 2.f)));
     entity.m_alpha = 1.f;
-    scene.m_entities.push_back(entity);
+    //scene.m_entities.push_back(entity);
 
 
-    // entity 5 : cube in front previous cube
+    //// entity 5 : cube in front previous cube
 
     Structures::Mesh* cube3 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
 
     entity = Structures::Entity(cube3, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
     entity.m_alpha = .5f;
-    scene.m_entities.push_back(entity);
-    
-    //Structures::Mesh* sphereMesh = Structures::Mesh::createSphere();
-
-    //entity = Structures::Entity(sphereMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f)));
-
     //scene.m_entities.push_back(entity);
+    
+    Structures::Mesh* sphereMesh = Structures::Mesh::createSphere();
+
+    entity = Structures::Entity(sphereMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f)));
+
+    scene.m_entities.push_back(entity);
 
 
     return scene;

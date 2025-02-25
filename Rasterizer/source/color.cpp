@@ -39,8 +39,8 @@ Structures::Color& Structures::Color::operator=(Structures::Color const& other)
 
 Structures::Color Structures::operator*(Color color, float val)
 {
-    return Color(std::min(static_cast<int>(m_r * val), 255), std::min(static_cast<int>(m_g * val), 255),
-                std::min(static_cast<int>(m_b * val), 255), std::min(static_cast<int>(m_a * val), 255));
+    return Color(std::min(static_cast<int>(color.m_r * val), 255), std::min(static_cast<int>(color.m_g * val), 255),
+                std::min(static_cast<int>(color.m_b * val), 255), std::min(static_cast<int>(color.m_a * val), 255));
 }
 
 Structures::Color Structures::operator-(Color c1, Color c2)

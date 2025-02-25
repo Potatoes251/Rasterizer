@@ -8,9 +8,10 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
     Structures::Vertex viewPoint(0, 0, 1);
 	LibMath::Matrix4 projection_viewMatrix = projectionMatrix * viewMatrix;
 
-    for (int j = 0; j < pScene->m_entities.size(); j++)
+    for each(Entity entity in pScene->m_entities)
     {
-        transformedMesh = Structures::Entity::getProjectedMesh(transformedMesh, projectionMatrix, viewMatrix);
+        transformedMesh = entity.getTransformedMesh(projection_viewMatrix);
+        //transformedMesh = Structures::Entity::getProjectedMesh(transformedMesh, projectionMatrix, viewMatrix);
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
@@ -20,23 +21,10 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
 
             int index3 = transformedMesh.m_indices[i + 2];
 
-            Vertex v1 = projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height);
-            Vertex v2 = projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height);
-            Vertex v3 = projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height);
-
-            if (edgeFunction(v1, v2, v3) < 0) continue;
             std::vector<Vertex> triangle = {
             Vertex(transformedMesh.m_vertices[index1].m_position, transformedMesh.m_vertices[index1].m_color),
             Vertex(transformedMesh.m_vertices[index2].m_position, transformedMesh.m_vertices[index2].m_color),
             Vertex(transformedMesh.m_vertices[index3].m_position, transformedMesh.m_vertices[index3].m_color)
-            };
-
-            std::vector<Vertex> triangle2 = {
-  
-            Vertex({ +0.5, +0.5, -2.5}, transformedMesh.m_vertices[index1].m_color),
-            Vertex({-0.5, +0.5, -0.5}, transformedMesh.m_vertices[index2].m_color),
-            Vertex({+0.5, -0.5, -0.5}, transformedMesh.m_vertices[index3].m_color),
-//            Vertex({-0.5, -0.5, -0.5}, transformedMesh.m_vertices[index3].m_color)
             };
 
             /*std::cout << "Before Clipping: " << triangle.size() << " vertices\n";
@@ -47,19 +35,29 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
             std::vector<std::vector<Vertex>> Triangles = clipToPlanes(triangle);
             //std::vector<Vertex> clippedTriangle = triangle;
 
-            /*for each(std::vector<Vertex> clippedTriangle in Triangles)
+            //std::cout << "After clipping : " << Triangles.size() << std::endl;
 
+            for each(std::vector<Vertex> clippedTriangle in Triangles)
             {
-                drawLine(v1, v2, *pTexture);
+                Vertex v1 = projectVertex(clippedTriangle[0], pTexture->m_width, pTexture->m_height);
+                Vertex v2 = projectVertex(clippedTriangle[1], pTexture->m_width, pTexture->m_height);
+                Vertex v3 = projectVertex(clippedTriangle[2], pTexture->m_width, pTexture->m_height);
 
-                drawLine(v2, v3, *pTexture);
+                if (edgeFunction(v1, v2, v3) < 0) continue;
 
-                drawLine(v1, v3, *pTexture);
+                if (wireframe)
+                {
+                    drawLine(v1, v2, *pTexture);
+
+                    drawLine(v2, v3, *pTexture);
+
+                    drawLine(v1, v3, *pTexture);
+                }
+                else
+                    fillTriangle(v1, v2, v3, *pTexture,
+                        entity.m_mesh->m_texture, entity.m_alpha, pScene->m_lights);
             }
-
-            else
-                fillTriangle(v1, v2, v3, *pTexture, 
-                    pScene->m_entities[j].m_mesh->m_texture, pScene->m_entities[j].m_alpha, pScene->m_lights);
+            
         }
     }
 }
@@ -156,10 +154,10 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             }
             for (int k = 0; k<lights.size(); ++k)
             point.calculateLighting(lights[k], Structures::Vertex(0, 0, 1));
-            if (tex.buffer(i, j) < zMax) // z-culling
+            if (sceneTexture.buffer(i, j) < zMax) // z-culling
             {
-            sceneTexture.setPixelColor(i, j, point.m_color, alphaEntity);
-            tex.updateBuffer(i, j, zMax);
+                sceneTexture.setPixelColor(i, j, point.m_color, alphaEntity);
+                sceneTexture.updateBuffer(i, j, zMax);
             }
         }
     }
@@ -314,17 +312,17 @@ void Structures::inputManager(Structures::Camera& camera)
     if (IsKeyPressed(KEY_S))
     {
         camera.m_position.getY() -= cameraSpeed;
-        std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
+        //std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
     }
     if (IsKeyPressed(KEY_A))
     {
         camera.m_position.getX() += cameraSpeed; 
-        std::cout << "Camera x : " << camera.m_position.getX() << '\n';
+        //std::cout << "Camera x : " << camera.m_position.getX() << '\n';
     }
     if (IsKeyPressed(KEY_D))
     {
         camera.m_position.getX() -= cameraSpeed;
-        std::cout << "Camera x : " << camera.m_position.getX() << '\n';
+        //std::cout << "Camera x : " << camera.m_position.getX() << '\n';
     }
 
 }
@@ -333,8 +331,8 @@ Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, 
 {// project vertex on a 2D plane
     float x = v.m_position.getX();
     float y = v.m_position.getY();
-    int p_x = ((x / 5) + 1) * 0.5 * width;
-    int p_y = height - (((y / 5) + 1) * 0.5 * height);
+    int p_x = ((x / 1) + 1) * 0.5 * width;
+    int p_y = height - (((y / 1) + 1) * 0.5 * height);
 
     Structures::Vertex projectedVertex(p_x, p_y, 0, v.m_color);
     projectedVertex.m_normal = v.m_normal;

@@ -47,17 +47,6 @@ Structures::Texture::Texture(char const* texture)
     stbi_image_free(data);
 }
 
-void Structures::Texture::clearTexture(const Color& c)
-{
-    for (size_t i = 0; i < m_width; i++)
-    {
-        for (size_t j = 0; j < m_height; j++)
-        {
-            m_pixels[(j * m_width) + i] = c;
-        }
-    }
-}
-
 void Structures::Texture::setPixelColor(unsigned int x, unsigned int y, const Color& c, float alpha)
 {
     Structures::Color finalColor;
