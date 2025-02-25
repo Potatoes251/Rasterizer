@@ -20,7 +20,7 @@ namespace LibMath
 
 		bool			isUnit(void) const;
 
-		float			dotProduct(Vector4 const& vec);
+		float			dotProduct(Vector4 const& vec) const;
 
 		float			magnitude(void) const;
 		float			magnitudeSquare(void) const;

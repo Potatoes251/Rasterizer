@@ -1,14 +1,16 @@
+#define _USE_MATH_DEFINES
 #include "rasterizer.h"
 
-void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool wireframe)
+void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const LibMath::Matrix4& projectionMatrix, LibMath::Matrix4 const& viewMatrix, bool wireframe)
 {
     pTexture->clearTexture();
     Mesh transformedMesh;
     Structures::Vertex viewPoint(0, 0, 1);
+	LibMath::Matrix4 projection_viewMatrix = projectionMatrix * viewMatrix;
 
     for (int j = 0; j < pScene->m_entities.size(); j++)
     {
-        transformedMesh = pScene->m_entities[j].getTransformedMesh();
+        transformedMesh = Structures::Entity::getProjectedMesh(transformedMesh, projectionMatrix, viewMatrix);
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
@@ -23,8 +25,30 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             Vertex v3 = projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height);
 
             if (edgeFunction(v1, v2, v3) < 0) continue;
+            std::vector<Vertex> triangle = {
+            Vertex(transformedMesh.m_vertices[index1].m_position, transformedMesh.m_vertices[index1].m_color),
+            Vertex(transformedMesh.m_vertices[index2].m_position, transformedMesh.m_vertices[index2].m_color),
+            Vertex(transformedMesh.m_vertices[index3].m_position, transformedMesh.m_vertices[index3].m_color)
+            };
 
-            if (wireframe)
+            std::vector<Vertex> triangle2 = {
+  
+            Vertex({ +0.5, +0.5, -2.5}, transformedMesh.m_vertices[index1].m_color),
+            Vertex({-0.5, +0.5, -0.5}, transformedMesh.m_vertices[index2].m_color),
+            Vertex({+0.5, -0.5, -0.5}, transformedMesh.m_vertices[index3].m_color),
+//            Vertex({-0.5, -0.5, -0.5}, transformedMesh.m_vertices[index3].m_color)
+            };
+
+            /*std::cout << "Before Clipping: " << triangle.size() << " vertices\n";
+            for (auto& v : triangle) {
+                std::cout << "(" << v.m_position.getX() << ", " << v.m_position.getY() << ", " << v.m_position.getZ() << ")\n";
+            }*/
+            //// Clip the triangle against the NDC frustum
+            std::vector<std::vector<Vertex>> Triangles = clipToPlanes(triangle);
+            //std::vector<Vertex> clippedTriangle = triangle;
+
+            /*for each(std::vector<Vertex> clippedTriangle in Triangles)
+
             {
                 drawLine(v1, v2, *pTexture);
 
@@ -98,6 +122,9 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
     int yMin = std::max(0.f, std::min(std::min(v1[1], v2[1]), v3[1]));
     int yMax = std::min(static_cast<float>(sceneTexture.m_height), std::max(std::max(v1[1], v2[1]), v3[1]));
 
+    float zMax = (v1[2] > v2[2]) ? v1[2] : v2[2];
+    zMax = (v3[2] > zMax) ? v3[2] : zMax;
+
     Structures::Vertex point;
 
     for (int i = xMin; i < xMax; i++)
@@ -129,7 +156,11 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             }
             for (int k = 0; k<lights.size(); ++k)
             point.calculateLighting(lights[k], Structures::Vertex(0, 0, 1));
+            if (tex.buffer(i, j) < zMax) // z-culling
+            {
             sceneTexture.setPixelColor(i, j, point.m_color, alphaEntity);
+            tex.updateBuffer(i, j, zMax);
+            }
         }
     }
 }
@@ -176,6 +207,126 @@ void Structures::Rasterizer::drawLine(Vertex v0, Vertex v1, Structures::Texture&
             y0 += sy;
         }
     }
+}
+
+LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float pitch, float yaw)
+{
+
+    //std::cout << "In create view x: " << eye.getX() << " z: " << eye.getZ() << '\n';
+    // I assume the values are already converted to radians.
+    float cosPitch = LibMath::cos(LibMath::Radian(pitch));
+    float sinPitch = LibMath::sin(LibMath::Radian(pitch));
+    float cosYaw = LibMath::cos(LibMath::Radian(yaw));
+    float sinYaw = LibMath::sin(LibMath::Radian(yaw)); 
+
+    LibMath::Matrix4;
+
+    // Forward vector (Z-axis, looking direction)
+    LibMath::Vector3 zaxis = -LibMath::Vector3{
+        cosPitch * sinYaw, // x
+        -sinPitch,         // y
+        cosPitch * cosYaw  // z
+    };
+    zaxis.normalize(); // Ensure it's a unit vector
+
+
+    // Right vector (X-axis)
+    LibMath::Vector3 xaxis = LibMath::Vector3(0.0f, 1.0f, 0.0f).cross(zaxis);
+    xaxis.normalize();
+
+    // Up vector (Y-axis)
+    LibMath::Vector3 yaxis = zaxis.cross(xaxis); // Already normalized
+
+    float dotXAxis = xaxis.dot(eye);
+    float dotYAxis = yaxis.dot(eye);
+    float dotZAxis = zaxis.dot(eye);
+
+
+    LibMath::Matrix4 ViewMatrix(
+        xaxis.getX(), yaxis.getX(), zaxis.getX(), dotXAxis,
+        xaxis.getY(), yaxis.getY(), zaxis.getY(), dotYAxis,
+        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), dotZAxis,
+             0,            0,            0,           1
+    );
+
+    // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+    return ViewMatrix.inverse();
+}
+
+LibMath::Matrix4 Structures::lookAt(const LibMath::Vector3& eye, const LibMath::Vector3 target, LibMath::Vector3 up)
+{
+
+    LibMath::Vector3 zaxis = (eye - target);    // The "forward" vector.
+    zaxis.normalize();
+
+    LibMath::Vector3 xaxis = up.cross(zaxis);// The "right" vector.
+    xaxis.normalize();
+
+    LibMath::Vector3 yaxis = zaxis.cross(xaxis);     // The "up" vector.
+
+    float dotXAxis = xaxis.dot(eye);
+    float dotYAxis = yaxis.dot(eye);
+    float dotZaxis = zaxis.dot(eye);
+
+    // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+    LibMath::Matrix4 viewMatrix = {
+        xaxis.getX(),            yaxis.getX(),            zaxis.getX(),       0,
+        xaxis.getY(),            yaxis.getY(),            zaxis.getY(),       0,
+        xaxis.getZ(),            yaxis.getZ(),            zaxis.getZ(),       0,
+        dotXAxis,                dotYAxis,                dotZaxis,           1
+    };
+    return viewMatrix;
+}
+
+void Structures::inputManager(Structures::Camera& camera)
+{
+    float pitch = 0.f;
+    float yaw = 0.f;
+    float cameraPosZ = 0.f;
+    float cameraPosX = 0.f;
+
+    if (IsKeyPressed(KEY_UP))
+    {
+        camera.m_pitch -= 0.1f;
+    }
+
+    if (IsKeyPressed(KEY_DOWN))
+    {
+        camera.m_pitch += 0.1f;
+    }
+
+    if (IsKeyPressed(KEY_LEFT))
+    {
+        camera.m_yaw -= 0.1f;
+    }
+
+    if (IsKeyPressed(KEY_RIGHT))
+    {
+        camera.m_yaw += 0.1f;
+    }
+
+    float cameraSpeed = 0.2f;
+    if (IsKeyPressed(KEY_W))
+    {
+        camera.m_position.getY() += cameraSpeed;
+        //std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
+    }
+    if (IsKeyPressed(KEY_S))
+    {
+        camera.m_position.getY() -= cameraSpeed;
+        std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
+    }
+    if (IsKeyPressed(KEY_A))
+    {
+        camera.m_position.getX() += cameraSpeed; 
+        std::cout << "Camera x : " << camera.m_position.getX() << '\n';
+    }
+    if (IsKeyPressed(KEY_D))
+    {
+        camera.m_position.getX() -= cameraSpeed;
+        std::cout << "Camera x : " << camera.m_position.getX() << '\n';
+    }
+
 }
 
 Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, float height)

@@ -15,7 +15,7 @@ namespace LibMath
 								float a10, float a11, float a12, float a13, 
 								float a20, float a21, float a22, float a23, 
 								float a30, float a31, float a32, float a33);
-							Matrix4(Matrix4& other);
+							Matrix4(const Matrix4& other);
 							~Matrix4() = default;
 
 		Matrix4&			operator=(Matrix4 const& other);
@@ -41,7 +41,7 @@ namespace LibMath
 			}
 		};
 
-		RowProxy			operator[](size_t row) const;					// alternative for operator[][] overload
+		//RowProxy			operator[](size_t row) const;					// alternative for operator[][] overload
 		RowProxy			operator[](size_t row);
 
 		Matrix4				transpose(void) const;
@@ -51,7 +51,7 @@ namespace LibMath
 		Matrix4				adjugate(void) const;
 		Matrix4				inverse(void) const;
 
-		Matrix4				perspective(float fov, float aspectRatio, float near, float far);
+		static		Matrix4			perspective(float fov, float aspectRatio, float near, float far);
 
 		static		Matrix4			createTransform(LibMath::Vector3 translate = LibMath::Vector3(0.0f, 0.0f, 0.0f), // returns T . R . S
 												LibMath::Radian rotation = LibMath::Radian(0.0f),

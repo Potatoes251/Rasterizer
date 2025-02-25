@@ -24,7 +24,7 @@ Structures::Vertex::Vertex(LibMath::Vector4 vec, Structures::Color color)
     m_color = color;
 }
 
-Structures::Vertex::Vertex(LibMath::Vector3 vec, Structures::Color color)
+Structures::Vertex::Vertex(const LibMath::Vector3 vec, const Structures::Color color)
 {
     m_position = vec;
     m_normal = LibMath::Vector3::zero();
@@ -67,4 +67,9 @@ void Structures::Vertex::calculateLighting(Structures::Light light, Structures::
 void Structures::Vertex::setColor(Color color)
 {
     m_color = color;
+}
+
+std::ostream& Structures::operator<<(std::ostream& os, const Vertex& vertex)
+{
+    return os << "position -> x: " << vertex.m_position.getX() << "\ty: " << vertex.m_position.getY() << "\tz: " << vertex.m_position.getZ() << '\n';
 }

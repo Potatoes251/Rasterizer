@@ -811,7 +811,7 @@ bool LibMath::Vector4::isUnit(void) const
 	return std::abs(magnitude() - 1) <= EPSILON;
 }
 
-float LibMath::Vector4::dotProduct(Vector4 const& vec)
+float LibMath::Vector4::dotProduct(Vector4 const& vec) const
 {
 	float x_comp = m_x * vec.m_x;
 	float y_comp = m_y * vec.m_y;

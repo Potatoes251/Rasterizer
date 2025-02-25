@@ -29,8 +29,9 @@ namespace Structures
 
 		Color& operator=(Color const& other);
 
-		Color operator+(Color other);
-		Color operator*(float val);
+		//Color operator+(Color other);
+
+		//Color operator*(float val) const ;
 
 		unsigned char m_r = 0;
 
@@ -41,6 +42,11 @@ namespace Structures
 		unsigned char m_a = 255;
 
 	};
+	Color operator*(Color color, float val);
+
+	Color operator-(Color c1, Color c2);
+
+	Color operator+(Color c1, Color c2);
 }
 
 

@@ -671,7 +671,7 @@ LibMath::Matrix4::Matrix4(float a00, float a01, float a02, float a03,
 	m_elements[3][3] = a33;
 }
 
-LibMath::Matrix4::Matrix4(Matrix4& other)
+LibMath::Matrix4::Matrix4(const Matrix4& other)
 {
 	m_elements[0][0] = other.m_elements[0][0];
 	m_elements[0][1] = other.m_elements[0][1];
@@ -903,7 +903,7 @@ LibMath::Matrix4 LibMath::Matrix4::perspective(float fov, float aspectRatio, flo
 	return Matrix4(
 		1 / (tanFov * aspectRatio), 0.f, 0.f, 0.f, 
 		0.f, 1 / tanFov, 0.f, 0.f, 
-		0.f, 0.f, (far + near) / (far - near), (2 * far * near) / (near - far),
+		0.f, 0.f, (far + near) / (far - near), (2 * far * near) / (near - far), 
 		0.f, 0.f, -1.f, 0.f
 	);
 }
@@ -918,6 +918,8 @@ LibMath::Matrix4 LibMath::Matrix4::createTransform(LibMath::Vector3 translate, L
 	float pow2X = powf(axis.getX(), 2.f);
 	float pow2Y = powf(axis.getY(), 2.f);
 	float pow2Z = powf(axis.getZ(), 2.f);
+
+	axis.normalize();
 
 	return Matrix4(
 		scale.getX() * ((pow2X * k) + cosR), scale.getX() * ((axis.getX() * axis.getY() * k) - (axis.getZ() * sinR)), scale.getX() * ((axis.getX() * axis.getZ() * k) + (axis.getY() * sinR)), translate.getX(),

@@ -16,7 +16,11 @@ namespace Structures
 
 		Entity& operator=(Entity const& other);
 
-		Mesh getTransformedMesh(void);
+		Mesh getTransformedMesh(LibMath::Matrix4 projection_viewMatrix);
+
+		static Mesh getProjectedMesh(Mesh transformedMesh, LibMath::Matrix4 projectionMatrix, LibMath::Matrix4 viewMatrix); // projected verteces are not normalized 
+
+		static Mesh getCameraProjectedMesh (Mesh transformedMesh, LibMath::Matrix4 viewMatrix);
 
 		LibMath::Matrix4	m_transform;
 		Mesh*				m_mesh = nullptr;
