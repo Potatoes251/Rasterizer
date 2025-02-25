@@ -54,7 +54,7 @@ float Structures::Vertex::calculateSpecular(Structures::Light light, Structures:
     LibMath::Vector3 half = lightDirection + viewPointDirection;
     half.normalize();
 
-    return pow(std::max(half.dot(m_normal), 0.f), 64) * light.m_specular;
+    return pow(std::max(half.dot(m_normal), 0.f), 32) * light.m_specular;
 }
 
 void Structures::Vertex::calculateLighting(Structures::Light light, Structures::Vertex viewPoint)

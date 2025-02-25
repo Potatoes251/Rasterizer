@@ -15,7 +15,8 @@ namespace Structures
 
 		static Mesh* createCube(Texture* tex, Structures::Color color);
 		static Mesh* createCube(Structures::Color color);
-		static void setCubeNormals(Mesh* cubeMesh);
+		static void setNormalsFace(Mesh* cubeMesh);
+		static void setNormals(Mesh* cubeMesh);
 
 		std::vector<Vertex> m_vertices;
 		std::vector<int> m_indices;

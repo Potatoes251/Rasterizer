@@ -3,7 +3,6 @@
 
 #include "color.h"
 
-
 namespace Structures
 {
 	struct Texture

@@ -34,13 +34,13 @@ Structures::Texture::Texture(char const* texture)
     {
         std::cout << "stbi_load error : fail to load image\npath was : ";
     }
-    std::cout << width << "X" << height << std::endl;
 
     m_width = width;
     m_height = height;
     m_pixels = new Color[width * height];
     
     std::memcpy(m_pixels, data, width * height * sizeof(Color));
+    stbi_image_free(data);
 }
 
 void Structures::Texture::clearTexture(const Color& c)

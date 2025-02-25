@@ -10,11 +10,11 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 {
     Structures::Scene scene;
 
-    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3::zero()) };
+    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3(400,300,1000)) };
 
     // entity 1 : cube
 
-    Structures::Mesh* cube = Structures::Mesh::createCube(COLOR_GOLD);
+    Structures::Mesh* cube = Structures::Mesh::createCube(nullptr, COLOR_GOLD);
 
     Structures::Entity entity(cube, LibMath::Matrix4::createTransform(LibMath::Vector3(3.f, 0.f, -2.f)));
     entity.m_alpha = 1.f;
@@ -29,23 +29,31 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
     Structures::Mesh* triangleMesh = new Structures::Mesh();
     *triangleMesh = Structures::Mesh({ v1, v2, v3 }, { 0, 1, 2 });
 
-    entity = Structures::Entity(triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.f, 2.f)), nullptr, 0.5f);
+    triangleMesh->setNormalsFace(triangleMesh);
+
+    for (int i = 0; i < 3; ++i)
+    {
+        triangleMesh->m_vertices[i].m_normal = LibMath::Vector3(0,0,1);
+        triangleMesh->m_vertices[i].m_normal.normalize();
+    }
+
+    entity = Structures::Entity(triangleMesh, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, -1.f, -2.f)), nullptr, 0.5f);
     entity.m_alpha = 1.f;
     scene.m_entities.push_back(entity);
-
+    
     // entity 3 : textured cube
 
     Structures::Texture* cubeTexture = new Structures::Texture("../../Rasterizer/include/container.png");
 
     Structures::Mesh* cube2 = Structures::Mesh::createCube(cubeTexture, COLOR_WHITE);
 
-    entity = Structures::Entity(cube2, LibMath::Matrix4::createTransform(LibMath::Vector3(-0.5f, 0.f, 0.f)));
+    entity = Structures::Entity(cube2, LibMath::Matrix4::createTransform(LibMath::Vector3(-1.5f, 0.f, -2.f)));
     entity.m_alpha = 1.f;
     scene.m_entities.push_back(entity);
 
     // entity 4 : cube behind next cube
 
-    Structures::Mesh* cube4 = Structures::Mesh::createCube(COLOR_MAGENTA);
+    Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_MAGENTA);
 
     entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f),
                                                                         LibMath::Radian(),
@@ -56,12 +64,11 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     // entity 5 : cube in front previous cube
 
-    Structures::Mesh* cube3 = Structures::Mesh::createCube(COLOR_CYAN);
+    Structures::Mesh* cube3 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
 
     entity = Structures::Entity(cube3, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
     entity.m_alpha = .5f;
     scene.m_entities.push_back(entity);
-
 
     return scene;
 }

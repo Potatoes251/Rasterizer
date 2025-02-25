@@ -15,7 +15,7 @@ Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color c
     cubeMesh->m_texture = tex;
 
     // Define the vertices of the cube with texture coordinates
-    static const Vertex coordinates[] = {
+    const Vertex coordinates[] = {
         // Back face
         { +0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // Top-right
         {-0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // Top-left
@@ -81,109 +81,22 @@ Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color c
         22, 23, 21
     };
 
-    //setCubeNormals(cubeMesh);
-
-    Vertex v1;
-
-    for (size_t i = 0; i < cubeMesh->m_vertices.size(); ++i)
-    {
-        v1 = cubeMesh->m_vertices[i];
-
-        cubeMesh->m_vertices[i].m_normal = LibMath::Vector3(2 * v1[0], 2 * v1[1], 2 * v1[2]);
-        cubeMesh->m_vertices[i].m_normal.normalize();
-    }
+    setNormalsFace(cubeMesh);
 
     return cubeMesh;
 }
 
-void Structures::Mesh::setCubeNormals(Mesh* cubeMesh)
+
+
+void Structures::Mesh::setNormals(Mesh* cubeMesh)
 {
     // Calculate the normals for each vertex
-    Vertex v1, v2, v3;
-    LibMath::Vector3 v1v2;
-    LibMath::Vector3 v1v3;
-    LibMath::Vector3 normal;
-    std::vector<LibMath::Vector3> vertexNormals(cubeMesh->m_vertices.size(), LibMath::Vector3(0.0f, 0.0f, 0.0f));
-
-    for (int i = 0; i < cubeMesh->m_indices.size(); i += 3)
+    for (int i = 0; i < cubeMesh->m_vertices.size(); ++i)
     {
-        v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]];
-        v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]];
-        v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]];
-
-        v1v3 = v3.m_position - v1.m_position;
-        v1v2 = v2.m_position - v1.m_position;
-
-        normal = v1v2.cross(v1v3);
-
-        vertexNormals[cubeMesh->m_indices[i]] += normal;
-        vertexNormals[cubeMesh->m_indices[i + 1]] += normal;
-        vertexNormals[cubeMesh->m_indices[i + 2]] += normal;
-
-    }
-
-    // adds together the normals of the sames vertices
-    std::vector<std::vector<size_t>> sameVertexGroups = {
-        {0, 12, 18},
-        {1, 8, 19},
-        {2, 14, 20},
-        {3, 10, 21},
-        {4, 11, 23},
-        {5, 9, 17},
-        {6, 13, 16},
-        {7, 15, 22}
-    };
-
-    for (const auto& group : sameVertexGroups)
-    {
-        LibMath::Vector3 averageNormal(0.0f, 0.0f, 0.0f);
-        for (size_t idx : group)
-        {
-            averageNormal += vertexNormals[idx];
-        }
-        for (size_t idx : group)
-        {
-            cubeMesh->m_vertices[idx].m_normal = averageNormal;
-        }
-    }
-
-    // Normalize the normals
-    for (int i = 0; i < cubeMesh->m_vertices.size(); i++)
-    {
+        cubeMesh->m_vertices[i].m_normal = cubeMesh->m_vertices[i].m_position;
         cubeMesh->m_vertices[i].m_normal.normalize();
     }
-
-
-    //// Calculate the normals for each vertex
-    //Vertex v1, v2, v3;
-    //LibMath::Vector3 v1v2;
-    //LibMath::Vector3 v1v3;
-    //LibMath::Vector3 normal;
-    //std::vector<LibMath::Vector3> vertexNormals(cubeMesh->m_vertices.size(), LibMath::Vector3(0.0f, 0.0f, 0.0f));
-    //    
-    //for (int i = 0; i < cubeMesh->m_indices.size(); i += 3)
-    //{
-    //    v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]];
-    //    v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]];
-    //    v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]];
-
-    //    v1v3 = v3.m_position - v1.m_position;
-    //    v1v2 = v2.m_position - v1.m_position;
-
-    //    normal = v1v2.cross(v1v3);
-
-    //    cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal = normal;
-    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal = normal;
-    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal = normal;
-
-    //    cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal.normalize();
-    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal.normalize();
-    //    cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal.normalize();
-    //}
 }
-
-
-
 
 Structures::Mesh* Structures::Mesh::createCube(Structures::Color color)
 {
@@ -220,15 +133,26 @@ Structures::Mesh* Structures::Mesh::createCube(Structures::Color color)
         3, 7, 4 // bottom trianlge2
     };
 
-    Vertex v1;
-
-    for (size_t i = 0; i < cubeMesh->m_vertices.size(); ++i)
-    {
-        v1 = cubeMesh->m_vertices[i];
-    
-        cubeMesh->m_vertices[i].m_normal = LibMath::Vector3(2*v1[0], 2*v1[1], 2*v1[2]);
-        cubeMesh->m_vertices[i].m_normal.normalize();
-    }
+    setNormalsFace(cubeMesh);
 
     return cubeMesh;
+}
+
+void Structures::Mesh::setNormalsFace(Mesh* cubeMesh)
+{
+    for (int i = 0; i < cubeMesh->m_indices.size(); i += 3)
+    {
+        LibMath::Vector3 v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_position;
+        LibMath::Vector3 v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_position;
+        LibMath::Vector3 v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_position;
+
+        LibMath::Vector3 v1v2 = v2 - v1;
+        LibMath::Vector3 v1v3 = v3 - v1;
+
+        LibMath::Vector3 normal = v1v2.cross(v1v3);
+
+        cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal = normal;
+        cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal = normal;
+        cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal = normal;
+    }
 }

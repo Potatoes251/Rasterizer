@@ -40,9 +40,9 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
         temp = LibMath::Vector4(vertex.m_position, 1.0f);   // transform the position
         temp = m_transform * temp;
         temp.homogenize();
-
+        
         Structures::Vertex result(temp, vertex.m_color);
-
+        
         temp = LibMath::Vector4(vertex.m_normal, 1.0f);     // transform the normal
         temp = transposeTransformMatrix * temp;
         temp.homogenize();
@@ -51,7 +51,11 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
         result.m_u = vertex.m_u;
         result.m_v = vertex.m_v;
         result.m_color.m_a *= m_alpha;
+
+        
+        result.m_normal.normalize();
         transformed.m_vertices.push_back(result);
+        
     }
 
     return transformed;

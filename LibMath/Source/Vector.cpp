@@ -299,6 +299,15 @@ LibMath::Vector3 LibMath::Vector3::back(void)
 	return Vector3(0.0f, 0.0f, -1.0f);
 }
 
+LibMath::Vector3& LibMath::Vector3::operator=(Vector3 const& other)
+{
+	m_x = other.m_x;
+	m_y = other.m_y;
+	m_z = other.m_z;
+
+	return *this;
+}
+
 float& LibMath::Vector3::operator[](int n)
 {
 	if (n == 0)
@@ -436,7 +445,7 @@ float LibMath::Vector3::magnitudeSquared(void) const
 void LibMath::Vector3::normalize(void)
 {
 	float mag = magnitude();
-
+	
 	m_x /= mag;
 	m_y /= mag;
 	m_z /= mag;

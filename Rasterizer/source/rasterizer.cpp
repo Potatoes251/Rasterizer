@@ -17,28 +17,25 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, bool 
             int index2 = transformedMesh.m_indices[i + 1];
 
             int index3 = transformedMesh.m_indices[i + 2];
-            
+
+            Vertex v1 = projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height);
+            Vertex v2 = projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height);
+            Vertex v3 = projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height);
+
+            if (edgeFunction(v1, v2, v3) < 0) continue;
+
             if (wireframe)
             {
-                drawLine(projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height), 
-                 projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height), 
-                 *pTexture);
+                drawLine(v1, v2, *pTexture);
 
-                drawLine(projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height), 
-                 projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
-                 *pTexture);
+                drawLine(v2, v3, *pTexture);
 
-                drawLine(projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height), 
-                 projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
-                 *pTexture);
+                drawLine(v1, v3, *pTexture);
             }
 
             else
-                fillTriangle(
-                    projectVertex(transformedMesh.m_vertices[index1], pTexture->m_width, pTexture->m_height),
-                    projectVertex(transformedMesh.m_vertices[index2], pTexture->m_width, pTexture->m_height),
-                    projectVertex(transformedMesh.m_vertices[index3], pTexture->m_width, pTexture->m_height), 
-                    *pTexture, pScene->m_entities[j].m_mesh->m_texture, pScene->m_entities[j].m_alpha);
+                fillTriangle(v1, v2, v3, *pTexture, 
+                    pScene->m_entities[j].m_mesh->m_texture, pScene->m_entities[j].m_alpha, pScene->m_lights);
         }
     }
 }
@@ -89,17 +86,17 @@ Structures::Color Structures::Rasterizer::getTexelColor(Vertex v, Texture* tex)
     return colorBottom * (yMax - yTex) + colorTop * (yTex - yMin);// interpolate between top and bottom
 }
 
-void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture, float alphaEntity)
+void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture, float alphaEntity, std::vector<Structures::Light> lights)
 {
     float area = edgeFunction(v1, v2, v3);
 
-    if (area < 0) return;
+    if (area < 0) return;   // back face culling
 
-    int xMin = std::min(std::min(v1[0], v2[0]), v3[0]);
-    int xMax = std::max(std::max(v1[0], v2[0]), v3[0]);
+    int xMin = std::max(0.f, std::min(std::min(v1[0], v2[0]), v3[0])); // set the bounding box of the triangle
+    int xMax = std::min(static_cast<float>(sceneTexture.m_width), std::max(std::max(v1[0], v2[0]), v3[0]));
 
-    int yMin = std::min(std::min(v1[1], v2[1]), v3[1]);
-    int yMax = std::max(std::max(v1[1], v2[1]), v3[1]);;
+    int yMin = std::max(0.f, std::min(std::min(v1[1], v2[1]), v3[1]));
+    int yMax = std::min(static_cast<float>(sceneTexture.m_height), std::max(std::max(v1[1], v2[1]), v3[1]));
 
     Structures::Vertex point;
 
@@ -109,29 +106,29 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
         {
             point = Structures::Vertex(i, j, 0);
 
-            float alpha = edgeFunction(v1, v2, point) / area;
+            float alpha = edgeFunction(v1, v2, point) / area;   // barycentric coordinate
             float beta = edgeFunction(v2, v3, point) / area;
             float gamma = edgeFunction(v3, v1, point) / area;
             if (alpha < 0 || beta < 0 || gamma < 0 || alpha + beta + gamma - 1 >= 0.0005) continue;
             
-            point.m_normal = LibMath::Vector3(v3.m_normal * alpha + v1.m_normal * beta + v2.m_normal * gamma);
+            point.m_normal = v1.m_normal;
             point.m_normal.normalize();
-            if (objectTexture != nullptr)
+
+            if (objectTexture)
             {
                 point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);
                 point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
 
                 //point.m_color = getNearestTexel(point, objectTexture);
                 point.m_color = getTexelColor(point, objectTexture);
-
-                //std::cout << static_cast<int>(point.m_color.m_a) << '\n';
             }
             else
             {
                 point.m_color = Structures::Color(v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma);
                 point.m_color.m_a = 255;
             }
-            point.calculateLighting(Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3::zero()), Structures::Vertex(0, 0, 1));
+            for (int k = 0; k<lights.size(); ++k)
+            point.calculateLighting(lights[k], Structures::Vertex(0, 0, 1));
             sceneTexture.setPixelColor(i, j, point.m_color, alphaEntity);
         }
     }
@@ -155,22 +152,26 @@ void Structures::Rasterizer::drawLine(Vertex v0, Vertex v1, Structures::Texture&
     // Initialize the error term
     int err = dx - dy;
 
-    while (true) {
+    while (true) 
+    {
         // Add the current point to the vector
         tex.setPixelColor(x0, y0);
 
         // Check if we have reached the end point
-        if (x0 == x1 && y0 == y1) {
+        if (x0 == x1 && y0 == y1) 
+        {
             break;
         }
 
         // Calculate the next point
         int e2 = 2 * err;
-        if (e2 > -dy) {
+        if (e2 > -dy) 
+        {
             err -= dy;
             x0 += sx;
         }
-        if (e2 < dx) {
+        if (e2 < dx) 
+        {
             err += dx;
             y0 += sy;
         }
@@ -178,7 +179,7 @@ void Structures::Rasterizer::drawLine(Vertex v0, Vertex v1, Structures::Texture&
 }
 
 Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, float height)
-{
+{// project vertex on a 2D plane
     float x = v.m_position.getX();
     float y = v.m_position.getY();
     int p_x = ((x / 5) + 1) * 0.5 * width;

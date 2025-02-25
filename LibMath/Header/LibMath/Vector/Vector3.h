@@ -36,7 +36,7 @@ namespace LibMath
 		static Vector3	front(void);										// return a unit vector pointing forward
 		static Vector3	back(void);											// return a unit vector pointing backward
 
-		Vector3&		operator=(Vector3 const& other) = default;
+		Vector3&		operator=(Vector3 const& other);
 
 		float&			operator[](int n);								// return this vector component value
 		float			operator[](int n) const;							// return this vector component value
