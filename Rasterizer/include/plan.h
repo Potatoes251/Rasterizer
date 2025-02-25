@@ -18,7 +18,7 @@ namespace Structures
 
     std::vector<Vertex> clipToPlane(const std::vector<Vertex>& polygone, const Plane& plane);
 
-    std::vector<Vertex> clipToPlanes(const std::vector<Vertex>& polygone);
+    std::vector<std::vector<Vertex>> clipToPlanes(const std::vector<Vertex>& polygone);
 
     float signedDistancePointPlane(const LibMath::Vector3& point, const Plane& plane);
 

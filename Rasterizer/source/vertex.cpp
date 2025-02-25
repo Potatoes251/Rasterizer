@@ -29,3 +29,8 @@ void Structures::Vertex::setColor(Color color)
 {
     m_color = color;
 }
+
+std::ostream& Structures::operator<<(std::ostream& os, const Vertex& vertex)
+{
+    return os << "position -> x: " << vertex.m_position.getX() << "\ty: " << vertex.m_position.getY() << "\tz: " << vertex.m_position.getZ() << '\n';
+}

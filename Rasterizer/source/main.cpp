@@ -18,17 +18,23 @@ int main(void)
 
     Structures::Scene scene = Structures::Scene::createProjectScene(tex);
 
-    LibMath::Matrix4 projectionMatrix = LibMath::Matrix4::perspective(M_PI / 1.5f, 16.f / 9.f, 0.1f, 100.f);
+    LibMath::Matrix4 projectionMatrix = LibMath::Matrix4::perspective(M_PI / 2.f, 10.f / 10.f, .1f, 100.f);
 
+    Structures::Camera camera = {LibMath::Vector3(0.f, 0.f, -1.f), 0.f, 0.f};
 
+    /*LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(LibMath::Vector3(0., 5.0f, 50.f), camera.m_pitch, camera.m_yaw);
 
-    LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(LibMath::Vector3(0.f, 0.f, 0.f));
-
-    rasterizer.renderScene(&scene, &tex, projectionMatrix, viewMatrix);
+   rasterizer.renderScene(&scene, &tex, projectionMatrix, viewMatrix);*/
 
     while (!WindowShouldClose())
     {
-        tex.drawTexture();
+        Structures::inputManager(camera);
+
+        LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(camera.m_position, camera.m_pitch, camera.m_yaw);
+
+        rasterizer.renderScene(&scene, &tex, projectionMatrix, viewMatrix);        
+
+        tex.drawTexture(); // Draw the rasterized scene
     }
     CloseWindow();
 

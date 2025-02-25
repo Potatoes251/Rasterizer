@@ -18,7 +18,7 @@ namespace Structures
 
 		Color& operator=(Color const& other);
 
-		Color operator+(Color other);
+		//Color operator+(Color other);
 
 		//Color operator*(float val) const ;
 
@@ -32,6 +32,10 @@ namespace Structures
 
 	};
 	Color operator*(Color color, float val);
+
+	Color operator-(Color c1, Color c2);
+
+	Color operator+(Color c1, Color c2);
 }
 
 

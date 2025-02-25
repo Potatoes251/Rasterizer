@@ -18,13 +18,13 @@ namespace LibMath
 						Vector3(Vector3 const& other);						// copy all component
 						~Vector3() = default;
 
-		float			getX(void) const { return m_x; };
+		const float&			getX(void) const { return m_x; };
 		float&			getX(void) { return m_x; };
 
-		float			getY(void) const { return m_y; };
+		const float&			getY(void) const { return m_y; };
 		float&			getY(void) { return m_y; };
 
-		float			getZ(void) const { return m_z; };
+		const float&			getZ(void) const { return m_z; };
 		float&			getZ(void) { return m_z; };
 
 		static Vector3	zero(void);											// return a vector with all its component set to 0

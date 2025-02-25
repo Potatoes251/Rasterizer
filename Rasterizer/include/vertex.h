@@ -1,6 +1,7 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+#include <ostream>
 #include "LibMath/vector.h"
 #include "color.h"
 
@@ -19,8 +20,11 @@ namespace Structures
 
 		LibMath::Vector3 m_position;
 		Structures::Color m_color;
+
+		
 	};
 
+	std::ostream& operator <<(std::ostream& os, const Vertex& vertex);
 	
 }
 

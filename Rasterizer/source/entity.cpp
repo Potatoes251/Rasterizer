@@ -23,7 +23,7 @@ Structures::Entity& Structures::Entity::operator=(Entity const& other)
     return *this;
 }
 
-Structures::Mesh Structures::Entity::getTransformedMesh(void)
+Structures::Mesh Structures::Entity::getTransformedMesh(LibMath::Matrix4 projection_viewMatrix)
 {
     Mesh transformed;
     LibMath::Vector4 temp;
@@ -34,7 +34,9 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
     { // optimize later
         temp = LibMath::Vector4(vertex.m_position, 1.f);
 
-        temp = (m_transform * temp);
+        temp = projection_viewMatrix * (m_transform * temp);
+
+        temp.homogenize();
 
         //std::cout << "x: " << temp.getX() << " y: " << temp.getY() << " z: " << temp.getZ() << " k: " << temp.getK() << '\n';
         transformed.m_vertices.push_back(Structures::Vertex(temp, vertex.m_color));
@@ -43,7 +45,7 @@ Structures::Mesh Structures::Entity::getTransformedMesh(void)
     return transformed;
 }
 
-Structures::Mesh Structures::Entity::getProjectedMesh(Mesh transformedMesh, LibMath::Matrix4 projectionMatrix)
+Structures::Mesh Structures::Entity::getProjectedMesh(Mesh transformedMesh, LibMath::Matrix4 projectionMatrix, LibMath::Matrix4 viewMatrix)
 {
     Structures::Mesh projectedMesh;
 
@@ -53,7 +55,8 @@ Structures::Mesh Structures::Entity::getProjectedMesh(Mesh transformedMesh, LibM
     {
         LibMath::Vector4 temp(vertex.m_position, 1.0f);
 
-        temp = projectionMatrix * temp;
+        temp = projectionMatrix * viewMatrix * temp;
+        //temp =  temp * viewMatrix * projectionMatrix;
 
         temp.homogenize();
 

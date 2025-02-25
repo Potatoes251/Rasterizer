@@ -28,7 +28,7 @@ void Structures::Texture::setPixelColor(unsigned int x, unsigned int y, const Co
     m_pixels[(y * m_width) + x] = c;
 }
 
-void Structures::Texture::drawTexture() const
+void Structures::Texture::drawTexture()
 {
     BeginDrawing();
 
@@ -52,4 +52,17 @@ float Structures::Texture::buffer(int const x, int const y)
 void Structures::Texture::updateBuffer(int const x, int const y, float zMax)
 {
     m_zBuffer[(y * m_width) + x] = zMax;
+}
+
+void Structures::Texture::clearTexture(const Color& color)
+{
+    for (size_t i = 0; i < 800; i++)
+    {
+        for (size_t j = 0; j < 600; j++)
+        {
+            m_pixels[j * m_width + i] = color;
+            m_zBuffer[j * m_width + i] = -5.f;
+            
+        }
+    }
 }
