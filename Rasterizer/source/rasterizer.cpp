@@ -11,7 +11,6 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
     for each(Entity entity in pScene->m_entities)
     {
         transformedMesh = entity.getTransformedMesh(projection_viewMatrix);
-        //transformedMesh = Structures::Entity::getProjectedMesh(transformedMesh, projectionMatrix, viewMatrix);
 
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
@@ -27,17 +26,10 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
             Vertex(transformedMesh.m_vertices[index3].m_position, transformedMesh.m_vertices[index3].m_color)
             };
             
-            /*std::cout << "Before Clipping: " << triangle.size() << " vertices\n";
-            for (auto& v : triangle) {
-                std::cout << "(" << v.m_position.getX() << ", " << v.m_position.getY() << ", " << v.m_position.getZ() << ")\n";
-            }*/
             //// Clip the triangle against the NDC frustum
             std::vector<std::vector<Vertex>> Triangles = clipToPlanes(transformedMesh.m_vertices[index1],
                                                                         transformedMesh.m_vertices[index2],
                                                                         transformedMesh.m_vertices[index3]);
-            //std::vector<Vertex> clippedTriangle = triangle;
-
-            //std::cout << "After clipping : " << Triangles.size() << std::endl;
 
             for each(std::vector<Vertex> clippedTriangle in Triangles)
             {
@@ -121,7 +113,7 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
 
     float zMax = (v1[2] > v2[2]) ? v1[2] : v2[2];
     zMax = (v3[2] > zMax) ? v3[2] : zMax;
-
+    
     Structures::Vertex point;
 
     for (int i = xMin; i < xMax; i++)
@@ -137,13 +129,12 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             
             point.m_normal = (v3.m_normal * alpha + v1.m_normal * beta + v2.m_normal * gamma);
             point.m_normal.normalize();
-
+            
             if (objectTexture)
             {
                 point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);
                 point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
 
-                //point.m_color = getNearestTexel(point, objectTexture);
                 point.m_color = getTexelColor(point, objectTexture);
             }
             else
@@ -210,8 +201,6 @@ void Structures::Rasterizer::drawLine(Vertex v0, Vertex v1, Structures::Texture&
 
 LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float pitch, float yaw)
 {
-
-    //std::cout << "In create view x: " << eye.getX() << " z: " << eye.getZ() << '\n';
     // I assume the values are already converted to radians.
     float cosPitch = LibMath::cos(LibMath::Radian(pitch));
     float sinPitch = LibMath::sin(LibMath::Radian(pitch));
@@ -255,10 +244,10 @@ LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float
 LibMath::Matrix4 Structures::lookAt(const LibMath::Vector3& eye, const LibMath::Vector3 target, LibMath::Vector3 up)
 {
 
-    LibMath::Vector3 zaxis = (eye - target);    // The "forward" vector.
+    LibMath::Vector3 zaxis = (eye - target);        // The "forward" vector.
     zaxis.normalize();
 
-    LibMath::Vector3 xaxis = up.cross(zaxis);// The "right" vector.
+    LibMath::Vector3 xaxis = up.cross(zaxis);       // The "right" vector.
     xaxis.normalize();
 
     LibMath::Vector3 yaxis = zaxis.cross(xaxis);     // The "up" vector.
@@ -279,11 +268,6 @@ LibMath::Matrix4 Structures::lookAt(const LibMath::Vector3& eye, const LibMath::
 
 void Structures::inputManager(Structures::Camera& camera)
 {
-    float pitch = 0.f;
-    float yaw = 0.f;
-    float cameraPosZ = 0.f;
-    float cameraPosX = 0.f;
-
     if (IsKeyPressed(KEY_UP))
     {
         camera.m_pitch -= 0.1f;
@@ -308,22 +292,18 @@ void Structures::inputManager(Structures::Camera& camera)
     if (IsKeyPressed(KEY_W))
     {
         camera.m_position.getY() += cameraSpeed;
-        //std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
     }
     if (IsKeyPressed(KEY_S))
     {
         camera.m_position.getY() -= cameraSpeed;
-        //std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
     }
     if (IsKeyPressed(KEY_A))
     {
         camera.m_position.getX() += cameraSpeed; 
-        //std::cout << "Camera x : " << camera.m_position.getX() << '\n';
     }
     if (IsKeyPressed(KEY_D))
     {
         camera.m_position.getX() -= cameraSpeed;
-        //std::cout << "Camera x : " << camera.m_position.getX() << '\n';
     }
 
 }
@@ -335,7 +315,7 @@ Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, 
     int p_x = ((x / 1.005) + 1) * 0.5 * width;
     int p_y = height - (((y / 1.005) + 1) * 0.5 * height);
 
-    Structures::Vertex projectedVertex(p_x, p_y, 0, v.m_color);
+    Structures::Vertex projectedVertex(p_x, p_y, v[2], v.m_color);
     projectedVertex.m_normal = v.m_normal;
     projectedVertex.m_u = v.m_u;
     projectedVertex.m_v = v.m_v;

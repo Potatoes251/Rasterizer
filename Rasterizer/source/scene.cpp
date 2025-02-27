@@ -10,7 +10,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 {
     Structures::Scene scene;
 
-    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(0.2, 0.4, 0.4, LibMath::Vector3(400,300,1000)) };
+    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(.2, 0.4, 0.4, LibMath::Vector3(400,300,1000)) };
 
     // entity 1 : cube
 
@@ -67,7 +67,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
     Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
 
     entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
-    entity.m_alpha = .5f;
+    entity.m_alpha = .3f;
     scene.m_entities.push_back(entity);
 
     // entity 6 : sphere
