@@ -44,7 +44,7 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
     //// entity 3 : textured cube
 
     Structures::Texture* cubeTexture = new Structures::Texture("../../Rasterizer/include/image.jpg");
-    //Structures::Texture* cubeTexture = nullptr;
+    
     Structures::Mesh* cube2 = Structures::Mesh::createCube(cubeTexture, COLOR_MAGENTA);
 
     entity = Structures::Entity(cube2, LibMath::Matrix4::createTransform(LibMath::Vector3(-1.5f, 0.f, -2.f)));
@@ -53,9 +53,9 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     //// entity 4 : cube behind next cube
 
-    Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_MAGENTA);
+    Structures::Mesh* cube3 = Structures::Mesh::createCube(nullptr, COLOR_MAGENTA);
 
-    entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f),
+    entity = Structures::Entity(cube3, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f),
                                                                         LibMath::Radian(),
                                                                         LibMath::Vector3(2.f, 2.f, 2.f)));
     entity.m_alpha = 1.f;
@@ -64,9 +64,9 @@ Structures::Scene Structures::Scene::createProjectScene(Structures::Texture& tex
 
     // entity 5 : cube in front previous cube
 
-    Structures::Mesh* cube3 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
+    Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
 
-    entity = Structures::Entity(cube3, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
+    entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
     entity.m_alpha = .5f;
     scene.m_entities.push_back(entity);
 

@@ -135,7 +135,7 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
             float gamma = edgeFunction(v3, v1, point) / area;
             if (alpha < 0 || beta < 0 || gamma < 0 || alpha + beta + gamma - 1 >= 0.0005) continue;
             
-            point.m_normal = v1.m_normal;
+            point.m_normal = (v3.m_normal * alpha + v1.m_normal * beta + v2.m_normal * gamma);
             point.m_normal.normalize();
 
             if (objectTexture)
@@ -151,8 +151,10 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
                 point.m_color = Structures::Color(v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma);
                 point.m_color.m_a = 255;
             }
-            for (int k = 0; k<lights.size(); ++k)
-            point.calculateLighting(lights[k], Structures::Vertex(0, 0, 1));
+            for (int k = 0; k < lights.size(); ++k)
+            {
+                point.calculateLighting(lights[k], Structures::Vertex(0, 0, 1));
+            }
             if (sceneTexture.buffer(i, j) < zMax) // z-culling
             {
                 sceneTexture.setPixelColor(i, j, point.m_color, alphaEntity);

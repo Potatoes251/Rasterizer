@@ -195,8 +195,9 @@ Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSe
             indices.push_back(first + 1);
         }
     }
-
-    return new Mesh(vertices, indices);
+    Mesh* SphereMesh = new Mesh(vertices, indices);
+    setNormalsSphere(SphereMesh);
+    return SphereMesh;
 }
 
 void Structures::Mesh::setNormalsFace(Mesh* cubeMesh)
@@ -215,5 +216,28 @@ void Structures::Mesh::setNormalsFace(Mesh* cubeMesh)
         cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal = normal;
         cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal = normal;
         cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal = normal;
+    }
+}
+
+void Structures::Mesh::setNormalsSphere(Mesh* SphereMesh)
+{
+    for (int i = 0; i < SphereMesh->m_indices.size(); i += 3)
+    {
+        LibMath::Vector3 v1 = SphereMesh->m_vertices[SphereMesh->m_indices[i]].m_position;
+        LibMath::Vector3 v2 = SphereMesh->m_vertices[SphereMesh->m_indices[i + 1]].m_position;
+        LibMath::Vector3 v3 = SphereMesh->m_vertices[SphereMesh->m_indices[i + 2]].m_position;
+
+        LibMath::Vector3 v1v2 = v2 - v1;
+        LibMath::Vector3 v1v3 = v3 - v1;
+
+        LibMath::Vector3 normal = v1v2.cross(v1v3);
+
+        SphereMesh->m_vertices[SphereMesh->m_indices[i]].m_normal += normal;
+        SphereMesh->m_vertices[SphereMesh->m_indices[i + 1]].m_normal += normal;
+        SphereMesh->m_vertices[SphereMesh->m_indices[i + 2]].m_normal += normal;
+    }
+    for (int i = 0; i < SphereMesh->m_vertices.size(); ++i)
+    {
+        SphereMesh->m_vertices[i].m_normal.normalize();
     }
 }
