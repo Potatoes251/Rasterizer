@@ -24,7 +24,7 @@ int main(void)
 
     LibMath::Matrix4 projectionMatrix = LibMath::Matrix4::perspective(M_PI / 2.f, 10.f / 10.f, .1f, 100.f);
 
-    Structures::Camera camera = {LibMath::Vector3(0.f, 0.f, 1.f), 0.f, 0.f};
+    Structures::Camera camera = {LibMath::Vector3(0.f, 0.f, 10.f), 0.f, 0.f};
 
     /*LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(LibMath::Vector3(0., 5.0f, 50.f), camera.m_pitch, camera.m_yaw);
 
@@ -41,10 +41,10 @@ int main(void)
         LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(camera.m_position, camera.m_pitch, camera.m_yaw);
         
         g_rotation += 0.05f;
-        scene.m_entities[0].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, -2.f, -2.f),
+        scene.m_entities[0].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0, 0.f),
                                                                             LibMath::Radian(g_rotation),
                                                                             LibMath::Vector3(1.5f, 1.5f, 1.5f));
-        scene.m_entities[2].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(2.f, 0.f, -2.f),
+        /*scene.m_entities[2].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(2.f, 0.f, -2.f),
                                                                             LibMath::Radian(g_rotation));
         scene.m_entities[3].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 1.5f, -3.f),
                                                                             LibMath::Radian(g_rotation),
@@ -52,7 +52,7 @@ int main(void)
         scene.m_entities[4].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 1.5f, -2.5f),
                                                                             LibMath::Radian(g_rotation));
         scene.m_entities[5].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f),
-                                                                            LibMath::Radian(g_rotation));
+                                                                            LibMath::Radian(g_rotation));*/
 
         rasterizer.renderScene(&scene, &tex, projectionMatrix, viewMatrix, g_wireframe);        
 
