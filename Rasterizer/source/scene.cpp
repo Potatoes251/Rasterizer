@@ -23,14 +23,14 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
 
     //// entity 2 : rainbowish triangle
 
-    //Structures::Vertex v1(-0.5f, -0.5f, 0.0f, COLOR_RED);
-    //Structures::Vertex v2(0.5f, -0.5f, 0.0f, COLOR_GREEN);
-    //Structures::Vertex v3(0.0f, 0.5f, 0.0f, COLOR_BLUE);
+    Structures::Vertex v1(-0.5f, -0.5f, 0.0f, COLOR_RED);
+    Structures::Vertex v2(0.5f, -0.5f, 0.0f, COLOR_GREEN);
+    Structures::Vertex v3(0.0f, 0.5f, 0.0f, COLOR_BLUE);
 
-    //Structures::Mesh* triangleMesh = new Structures::Mesh();
-    //*triangleMesh = Structures::Mesh({ v1, v2, v3 }, { 0, 1, 2 });
+    Structures::Mesh* triangleMesh = new Structures::Mesh();
+    *triangleMesh = Structures::Mesh({ v1, v2, v3 }, { 0, 1, 2 });
 
-    triangleMesh->setNormalsFace(triangleMesh);
+    triangleMesh->setNormalsCube(triangleMesh);
 
     for (int i = 0; i < 3; ++i)
     {

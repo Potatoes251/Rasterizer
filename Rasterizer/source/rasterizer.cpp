@@ -6,7 +6,7 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
 
     pTexture->clearTexture();   // reset the texture
     Mesh transformedMesh;
-    Structures::Vertex viewPoint(0, 0, 1);
+    //Structures::Vertex viewPoint(0, 0, 1);
 	LibMath::Matrix4 projection_viewMatrix = projectionMatrix * viewMatrix;
 
     for each(Entity entity in pScene->m_entities)
