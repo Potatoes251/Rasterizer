@@ -5,19 +5,15 @@
 
 #include "mesh.h"
 
-
-
 Structures::Mesh::Mesh(std::vector<Vertex> vertices, std::vector<int> indices)
 {
     m_vertices = vertices;
     m_indices = indices;
 }
 
-Structures::Mesh::Mesh() {}
-
-Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color color)
+Structures::Mesh*       Structures::Mesh::createCube(Texture* tex, Structures::Color color)
 {
-    Mesh* cubeMesh = new Mesh();
+    Mesh*       cubeMesh = new Mesh();
 
     cubeMesh->m_texture = tex;
 
@@ -42,10 +38,10 @@ Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color c
         {-0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // front-bottom-left
 
         // Right face
-        {+0.5, +0.5, -0.5, 0.0f, 1.0f, color}, // back-top-right
-        {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // front-top-right
-        {+0.5, -0.5, -0.5, 0.0f, 0.0f, color}, // back-bottom-right
-        {+0.5, -0.5, +0.5, 1.0f, 0.0f, color}, // front-bottom-right
+        {+0.5, +0.5, -0.5, 1.0f, 1.0f, color}, // back-top-right
+        {+0.5, +0.5, +0.5, 0.0f, 1.0f, color}, // front-top-right
+        {+0.5, -0.5, -0.5, 1.0f, 0.0f, color}, // back-bottom-right
+        {+0.5, -0.5, +0.5, 0.0f, 0.0f, color}, // front-bottom-right
 
         // Top face
         {+0.5, +0.5, +0.5, 1.0f, 1.0f, color}, // front-top-right
@@ -88,87 +84,56 @@ Structures::Mesh* Structures::Mesh::createCube(Texture* tex, Structures::Color c
         22, 23, 21
     };
 
-    setNormalsFace(cubeMesh);
+    setNormalsCube(cubeMesh);
 
     return cubeMesh;
 }
 
-
-
-void Structures::Mesh::setNormals(Mesh* cubeMesh)
+void        Structures::Mesh::setNormalsCube(Mesh* cubeMesh)    // calculate the normals per face
 {
-    // Calculate the normals for each vertex
-    for (int i = 0; i < cubeMesh->m_vertices.size(); ++i)
+    LibMath::Vector3    v1;
+    LibMath::Vector3    v2;
+    LibMath::Vector3    v3;
+    LibMath::Vector3    v1v2;
+    LibMath::Vector3    v1v3;
+    LibMath::Vector3    normal;
+
+    for (int i = 0; i < cubeMesh->m_indices.size(); i += 3)
     {
-        cubeMesh->m_vertices[i].m_normal = cubeMesh->m_vertices[i].m_position;
-        cubeMesh->m_vertices[i].m_normal.normalize();
+        v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_position;
+        v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_position;
+        v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_position;
+
+        v1v2 = v2 - v1;
+        v1v3 = v3 - v1;
+
+        normal = v1v2.cross(v1v3); // calculate the face normal
+
+        cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal = normal; // put it in the vertex
+        cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal = normal;
+        cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal = normal;
     }
 }
 
-Structures::Mesh* Structures::Mesh::createCube(Structures::Color color)
+Structures::Mesh*       Structures::Mesh::createSphere(int widthSegments, int heightSegments, float radius)
 {
-    Mesh* cubeMesh = new Mesh();
-
-    const Vertex coordinates[] = {
-    {+0.5, +0.5, -0.5, color}, // Back-top-right
-    {-0.5, +0.5, -0.5, color}, // Back-top-left
-    {+0.5, -0.5, -0.5, color}, // Back-bottom-right
-    {-0.5, -0.5, -0.5, color}, // Back-bottom-left
-    {-0.5, -0.5, +0.5, color}, // Front-bottom-left
-    {-0.5, +0.5, +0.5, color}, // Front-top-left
-    {+0.5, +0.5, +0.5, color}, // Front-top-right
-    {+0.5, -0.5, +0.5, color}, // Front-bottom-right
-    };
-
-    for (const auto& vertex : coordinates)
-    {
-        cubeMesh->m_vertices.push_back(Structures::Vertex(vertex));
-    }
-
-    cubeMesh->m_indices = {
-        1, 2, 3, // back triable 1
-        1, 0, 2, // back triangle 2
-
-        4, 6, 5, // front triangle 1
-        4, 7, 6, // front triangle 2
-
-        7, 2, 0, // right triangle 1
-        7, 0, 6, // right triangle 2
-
-        5, 1, 3, // left triangle 1
-        5, 3, 4, // left triangle 2
-
-        0, 1, 5, // top triangle 1
-        0, 5, 6, // top triangle 2 
-         
-        3, 2, 7, // bottom triangle 1
-        3, 7, 4 // bottom trianlge2
-    };
-
-    setNormalsFace(cubeMesh);
-
-    return cubeMesh;
-}
-
-Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSegments, float radius)
-{
-    std::vector<Vertex> vertices;
-    std::vector<int> indices;
+    std::vector<Vertex>     vertices;
+    std::vector<int>        indices;
 
     // Génération des sommets
     for (int height = 0; height <= heightSegments; ++height)
     {
-        float theta = height * M_PI / heightSegments;  // De 0 à Pi
-        float sinTheta = sin(theta);
-        float cosTheta = cos(theta);
+        float   theta = height * M_PI / heightSegments;  // De 0 à Pi
+        float   sinTheta = sin(theta);
+        float   cosTheta = cos(theta);
 
         for (int width = 0; width <= widthSegments; ++width)
         {
-            float phi = width * 2.0f * M_PI / widthSegments;  // De 0 à 2Pi
-            float sinPhi = sin(phi);
-            float cosPhi = cos(phi);
+            float   phi = width * 2.0f * M_PI / widthSegments;  // De 0 à 2Pi
+            float   sinPhi = sin(phi);
+            float   cosPhi = cos(phi);
 
-            LibMath::Vector3 position = {
+            LibMath::Vector3    position = {
                 radius * cosPhi * sinTheta,
                 radius * sinPhi * sinTheta,
                 radius * cosTheta
@@ -183,8 +148,8 @@ Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSe
     {
         for (int width = 0; width < widthSegments; ++width)
         {
-            int first = (height * (widthSegments + 1)) + width;
-            int second = first + widthSegments + 1;
+            int     first = (height * (widthSegments + 1)) + width;
+            int     second = first + widthSegments + 1;
 
             indices.push_back(first);
             indices.push_back(second);
@@ -195,49 +160,33 @@ Structures::Mesh* Structures::Mesh::createSphere(int widthSegments, int heightSe
             indices.push_back(first + 1);
         }
     }
-    Mesh* SphereMesh = new Mesh(vertices, indices);
+    Mesh*   SphereMesh = new Mesh(vertices, indices);
     setNormalsSphere(SphereMesh);
     return SphereMesh;
 }
 
-void Structures::Mesh::setNormalsFace(Mesh* cubeMesh)
+void        Structures::Mesh::setNormalsSphere(Mesh* SphereMesh) // calculate the average face normal for each vertex
 {
-    for (int i = 0; i < cubeMesh->m_indices.size(); i += 3)
-    {
-        LibMath::Vector3 v1 = cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_position;
-        LibMath::Vector3 v2 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_position;
-        LibMath::Vector3 v3 = cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_position;
+    LibMath::Vector3    v1;
+    LibMath::Vector3    v2;
+    LibMath::Vector3    v3;
+    LibMath::Vector3    v1v2;
+    LibMath::Vector3    v1v3;
+    LibMath::Vector3    normal;
 
-        LibMath::Vector3 v1v2 = v2 - v1;
-        LibMath::Vector3 v1v3 = v3 - v1;
-
-        LibMath::Vector3 normal = v1v2.cross(v1v3);
-
-        cubeMesh->m_vertices[cubeMesh->m_indices[i]].m_normal = normal;
-        cubeMesh->m_vertices[cubeMesh->m_indices[i + 1]].m_normal = normal;
-        cubeMesh->m_vertices[cubeMesh->m_indices[i + 2]].m_normal = normal;
-    }
-}
-
-void Structures::Mesh::setNormalsSphere(Mesh* SphereMesh)
-{
     for (int i = 0; i < SphereMesh->m_indices.size(); i += 3)
     {
-        LibMath::Vector3 v1 = SphereMesh->m_vertices[SphereMesh->m_indices[i]].m_position;
-        LibMath::Vector3 v2 = SphereMesh->m_vertices[SphereMesh->m_indices[i + 1]].m_position;
-        LibMath::Vector3 v3 = SphereMesh->m_vertices[SphereMesh->m_indices[i + 2]].m_position;
+        v1 = SphereMesh->m_vertices[SphereMesh->m_indices[i]].m_position;
+        v2 = SphereMesh->m_vertices[SphereMesh->m_indices[i + 1]].m_position;
+        v3 = SphereMesh->m_vertices[SphereMesh->m_indices[i + 2]].m_position;
 
-        LibMath::Vector3 v1v2 = v2 - v1;
-        LibMath::Vector3 v1v3 = v3 - v1;
+        v1v2 = v2 - v1;
+        v1v3 = v3 - v1;
 
-        LibMath::Vector3 normal = v1v2.cross(v1v3);
+        normal = v1v2.cross(v1v3); // calculate the face normal
 
-        SphereMesh->m_vertices[SphereMesh->m_indices[i]].m_normal += normal;
-        SphereMesh->m_vertices[SphereMesh->m_indices[i + 1]].m_normal += normal;
+        SphereMesh->m_vertices[SphereMesh->m_indices[i]].m_normal += normal; // add it to the on of the other face
+        SphereMesh->m_vertices[SphereMesh->m_indices[i + 1]].m_normal += normal; // of the vertex to get the average
         SphereMesh->m_vertices[SphereMesh->m_indices[i + 2]].m_normal += normal;
-    }
-    for (int i = 0; i < SphereMesh->m_vertices.size(); ++i)
-    {
-        SphereMesh->m_vertices[i].m_normal.normalize();
     }
 }

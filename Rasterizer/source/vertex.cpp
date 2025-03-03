@@ -54,22 +54,12 @@ float Structures::Vertex::calculateSpecular(Structures::Light light, Structures:
     LibMath::Vector3 half = lightDirection + viewPointDirection;
     half.normalize();
 
-    return pow(std::max(half.dot(m_normal), 0.f), 32) * light.m_specular;
+    return pow(std::max(half.dot(m_normal), 0.f), 64) * light.m_specular;
 }
 
 void Structures::Vertex::calculateLighting(Structures::Light light, Structures::Vertex viewPoint)
 {
-    unsigned char alpha = m_color.m_a;
+    unsigned char alpha = m_color.m_a;  // keep the alpha unchanged
     m_color = m_color * light.m_ambient + m_color * calculatediffuse(light) + m_color * calculateSpecular(light, viewPoint);
     m_color.m_a = alpha;
-}
-
-void Structures::Vertex::setColor(Color color)
-{
-    m_color = color;
-}
-
-std::ostream& Structures::operator<<(std::ostream& os, const Vertex& vertex)
-{
-    return os << "position -> x: " << vertex.m_position.getX() << "\ty: " << vertex.m_position.getY() << "\tz: " << vertex.m_position.getZ() << '\n';
 }

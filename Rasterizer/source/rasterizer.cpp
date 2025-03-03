@@ -2,8 +2,9 @@
 #include "rasterizer.h"
 
 void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const LibMath::Matrix4& projectionMatrix, LibMath::Matrix4 const& viewMatrix, bool wireframe)
-{
-    pTexture->clearTexture();
+{// render the scene in the texture
+
+    pTexture->clearTexture();   // reset the texture
     Mesh transformedMesh;
     Structures::Vertex viewPoint(0, 0, 1);
 	LibMath::Matrix4 projection_viewMatrix = projectionMatrix * viewMatrix;
@@ -15,9 +16,7 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
         for (size_t i = 0; i < transformedMesh.m_indices.size(); i += 3)
         {
             int index1 = transformedMesh.m_indices[i];
-
             int index2 = transformedMesh.m_indices[i + 1];
-
             int index3 = transformedMesh.m_indices[i + 2];
 
             std::vector<Vertex> triangle = {
@@ -26,13 +25,14 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
             Vertex(transformedMesh.m_vertices[index3].m_position, transformedMesh.m_vertices[index3].m_color)
             };
             
-            //// Clip the triangle against the NDC frustum
+            // Clip the triangle against the NDC frustum
             std::vector<std::vector<Vertex>> Triangles = clipToPlanes(transformedMesh.m_vertices[index1],
                                                                         transformedMesh.m_vertices[index2],
                                                                         transformedMesh.m_vertices[index3]);
 
             for each(std::vector<Vertex> clippedTriangle in Triangles)
             {
+                // project vertex on a 2D plane
                 Vertex v1 = projectVertex(clippedTriangle[1], pTexture->m_width, pTexture->m_height);
                 Vertex v2 = projectVertex(clippedTriangle[0], pTexture->m_width, pTexture->m_height);
                 Vertex v3 = projectVertex(clippedTriangle[2], pTexture->m_width, pTexture->m_height);
@@ -40,14 +40,12 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
                 if (edgeFunction(v1, v2, v3) < 0) continue; // back face culling
 
                 if (wireframe)
-                {
+                {   // draw in wireframe
                     drawLine(v1, v2, *pTexture);
-
                     drawLine(v2, v3, *pTexture);
-
                     drawLine(v1, v3, *pTexture);
                 }
-                else
+                else // draw full triangle
                     fillTriangle(v1, v2, v3, *pTexture,
                         entity.m_mesh->m_texture, entity.m_alpha, pScene->m_lights);
             }
@@ -60,45 +58,26 @@ float Structures::Rasterizer::edgeFunction(Vertex v1, Vertex v2, Vertex v3)
     return -((v2[0] - v1[0]) * (v3[1] - v1[1]) - (v2[1] - v1[1]) * (v3[0] - v1[0]));
 }
 
-Structures::Color Structures::Rasterizer::getNearestTexel(Vertex v, Texture* tex)
-{
-    float xTex = v.m_u * (tex->m_width - 1);
-    float yTex = v.m_v * (tex->m_height - 1);
-
-    int x = static_cast<int>(xTex);
-    int y = static_cast<int>(yTex);
-
-    if (xTex - x >= 0.5f)
-    {
-        ++x;
-    }
-    if (yTex - y >= 0.5f)
-    {
-        ++y;
-    }
-    Structures::Color c = tex->m_pixels[(y * tex->m_width) + x];
-    return c;
-}
-
 Structures::Color Structures::Rasterizer::getTexelColor(Vertex v, Texture* tex)
 {// bilinear interpolation
-    float xTex = v.m_u * (tex->m_width - 1);
-    float yTex = v.m_v * (tex->m_height - 1);
 
-    int xMin = static_cast<int>(xTex);
-    int yMin = static_cast<int>(yTex);
-    int xMax = static_cast<int>(xTex) + 1;
-    int yMax = static_cast<int>(yTex) + 1;
+    float   xTex = v.m_u * (tex->m_width - 1);
+    float   yTex = v.m_v * (tex->m_height - 1);
 
-    Structures::Color colorBL = tex->m_pixels[(yMin * tex->m_width) + xMin];
-    Structures::Color colorBR = tex->m_pixels[(yMin * tex->m_width) + xMax];
-    Structures::Color colorTL = tex->m_pixels[(yMax * tex->m_width) + xMin];
-    Structures::Color colorTR = tex->m_pixels[(yMax * tex->m_width) + xMax];
+    int     xMin = static_cast<int>(xTex);
+    int     yMin = static_cast<int>(yTex);
+    int     xMax = static_cast<int>(xTex) + 1;
+    int     yMax = static_cast<int>(yTex) + 1;
 
-    Structures::Color colorBottom = colorBL * (xMax - xTex) + colorBR * (xTex - xMin);// interpolate bottom line
-    Structures::Color colorTop = colorTL * (xMax - xTex) + colorTR * (xTex - xMin);// interpolate top line
+    Structures::Color   colorBL = tex->m_pixels[(yMin * tex->m_width) + xMin];  // fetch color of nearby pixel
+    Structures::Color   colorBR = tex->m_pixels[(yMin * tex->m_width) + xMax];
+    Structures::Color   colorTL = tex->m_pixels[(yMax * tex->m_width) + xMin];
+    Structures::Color   colorTR = tex->m_pixels[(yMax * tex->m_width) + xMax];
 
-    return colorBottom * (yMax - yTex) + colorTop * (yTex - yMin);// interpolate between top and bottom
+    Structures::Color   colorBottom = colorBL * (xMax - xTex) + colorBR * (xTex - xMin);    // interpolate bottom line
+    Structures::Color   colorTop = colorTL * (xMax - xTex) + colorTR * (xTex - xMin);       // interpolate top line
+
+    return colorBottom * (yMax - yTex) + colorTop * (yTex - yMin);  // interpolate between top and bottom
 }
 
 void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Texture& sceneTexture, Texture* objectTexture, float alphaEntity, std::vector<Structures::Light> lights)
@@ -106,12 +85,12 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
     float area = edgeFunction(v1, v2, v3);
 
     int xMin = std::min(std::min(v1[0], v2[0]), v3[0]); // set the bounding box of the triangle
-    int xMax = std::max(std::max(v1[0], v2[0]), v3[0]);
+    int xMax = std::max(std::max(v1[0], v2[0]), v3[0]); // to only go through the pixel inside it
 
     int yMin = std::min(std::min(v1[1], v2[1]), v3[1]);
     int yMax = std::max(std::max(v1[1], v2[1]), v3[1]);
 
-    float zMax = (v1[2] > v2[2]) ? v1[2] : v2[2];
+    float zMax = (v1[2] > v2[2]) ? v1[2] : v2[2];   // take the zMax for the zbuffer
     zMax = (v3[2] > zMax) ? v3[2] : zMax;
     
     Structures::Vertex point;
@@ -120,30 +99,30 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
     {
         for (int j = yMin; j < yMax; j++)
         {
-            point = Structures::Vertex(i, j, 0);
+            point = Structures::Vertex(i, j, 0);    // create a temp vertex to store info about the current pixel
 
-            float alpha = edgeFunction(v1, v2, point) / area;   // barycentric coordinate
+            float alpha = edgeFunction(v1, v2, point) / area;   // calculate barycentric coordinate
             float beta = edgeFunction(v2, v3, point) / area;
             float gamma = edgeFunction(v3, v1, point) / area;
             if (alpha < 0 || beta < 0 || gamma < 0 || alpha + beta + gamma - 1 >= 0.0005) continue;
             
             point.m_normal = (v3.m_normal * alpha + v1.m_normal * beta + v2.m_normal * gamma);
-            point.m_normal.normalize();
+            point.m_normal.normalize(); // interpolate the normal
             
             if (objectTexture)
             {
-                point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);
+                point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);  // interpolate the texture coordinate
                 point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
 
-                point.m_color = getTexelColor(point, objectTexture);
+                point.m_color = getTexelColor(point, objectTexture); // fetch texel color
             }
             else
             {
                 point.m_color = Structures::Color(v3.m_color * alpha + v1.m_color * beta + v2.m_color * gamma);
-                point.m_color.m_a = 255;
+                point.m_color.m_a = 255;    // interpolate color when there is no texture on the cube
             }
             for (int k = 0; k < lights.size(); ++k)
-            {
+            {   // apply lighting of all light source on the point
                 point.calculateLighting(lights[k], Structures::Vertex(0, 0, 1));
             }
             if (sceneTexture.buffer(i, j) < zMax) // z-culling
@@ -266,8 +245,12 @@ LibMath::Matrix4 Structures::lookAt(const LibMath::Vector3& eye, const LibMath::
     return viewMatrix;
 }
 
-void Structures::inputManager(Structures::Camera& camera)
+void Structures::inputManager(Structures::Camera& camera, bool& wireframe)
 {
+    if (IsKeyPressed(KEY_F1))
+    {
+        wireframe = !wireframe;
+    }
     if (IsKeyPressed(KEY_UP))
     {
         camera.m_pitch -= 0.1f;
@@ -306,6 +289,57 @@ void Structures::inputManager(Structures::Camera& camera)
         camera.m_position.getX() -= cameraSpeed;
     }
 
+}
+
+void Structures::mainLoop(Structures::Camera& camera, Texture& texture, Scene& scene, LibMath::Matrix4& projectionMatrix)
+{
+    // execute the main loop
+    Structures::Rasterizer  rasterizer;
+    float                   rotation = 0.f;
+    bool                    wireframe = false;
+
+    while (!WindowShouldClose())
+    {
+        Structures::inputManager(camera, wireframe);
+
+        LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(camera.m_position, camera.m_pitch, camera.m_yaw);
+
+        rotation += 0.05f;
+        scene.m_entities[0].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, -2.f, -2.f),
+            LibMath::Radian(rotation),
+            LibMath::Vector3(1.5f, 1.5f, 1.5f));
+        scene.m_entities[2].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(2.f, 0.f, -2.f),
+            LibMath::Radian(rotation));
+        scene.m_entities[3].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 1.5f, -3.f),
+            LibMath::Radian(rotation),
+            LibMath::Vector3(1.25f, 1.25f, 1.25f));
+        scene.m_entities[4].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 1.5f, -2.5f),
+            LibMath::Radian(rotation));
+        scene.m_entities[5].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f),
+            LibMath::Radian(rotation));
+
+        // render the scene in the texture
+        rasterizer.renderScene(&scene, &texture, projectionMatrix, viewMatrix, wireframe);
+
+        texture.drawTexture(); // Draw the rasterized scene
+    }
+}
+
+void Structures::deleteAndCloseWindow(Scene& scene)
+{
+    for (int i = 0; i < scene.m_entities.size(); ++i)
+    {
+        if (scene.m_entities[i].m_texture)
+        {
+            delete scene.m_entities[i].m_texture;
+        }
+        if (scene.m_entities[i].m_mesh)
+        {
+            delete scene.m_entities[i].m_mesh;
+        }
+    }
+
+    CloseWindow();
 }
 
 Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, float height)

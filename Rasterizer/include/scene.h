@@ -12,10 +12,10 @@ namespace Structures
 		Scene() = default;
 		Scene(std::vector<Entity> entities, std::vector<Light> lights);
 
-		static Scene createProjectScene(Structures::Texture& tex);
+		static Scene			createProjectScene(Structures::Texture& tex);
 
-		std::vector<Entity> m_entities;
-		std::vector<Light> m_lights;
+		std::vector<Entity>		m_entities;
+		std::vector<Light>		m_lights;
 	};
 
 }
