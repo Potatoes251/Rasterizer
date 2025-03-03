@@ -903,8 +903,8 @@ LibMath::Matrix4 LibMath::Matrix4::perspective(float fov, float aspectRatio, flo
 	return Matrix4(
 		1 / (tanFov * aspectRatio), 0.f, 0.f, 0.f,
 		0.f, 1 / tanFov, 0.f, 0.f,
-		0.f, 0.f, (far + near) / (far - near), (2 * far * near) / (near - far),
-		0.f, 0.f, -1.f, 0.f
+		0.f, 0.f, 0.f, -1.f,
+		0.f, (far + near) / (far - near), (2 * far * near) / (near - far), 0.f
 	);
 }
 
