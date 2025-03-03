@@ -210,10 +210,10 @@ LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float
 
 
     LibMath::Matrix4 ViewMatrix(
-        xaxis.getX(), yaxis.getX(), zaxis.getX(), -dotXAxis,
-        xaxis.getY(), yaxis.getY(), zaxis.getY(), -dotYAxis,
-        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), -dotZAxis,
-             0,            0,            0,           1
+        xaxis.getX(), yaxis.getX(), zaxis.getX(), 0,
+        xaxis.getY(), yaxis.getY(), zaxis.getY(), 0,
+        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), 0,
+        -dotXAxis,      -dotYAxis,    -dotZAxis,  1
     );
 
     // Create a 4x4 view matrix from the right, up, forward and eye position vectors
