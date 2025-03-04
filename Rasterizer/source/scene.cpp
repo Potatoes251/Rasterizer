@@ -70,7 +70,7 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
     Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
 
     entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
-    entity.m_alpha = .3f;
+    entity.m_alpha = .5f;
     scene.m_entities.push_back(entity);
 
     // entity 6 : sphere
