@@ -161,7 +161,7 @@ std::vector<std::vector<Structures::Vertex>> Structures::clipToPlanes(Vertex& v1
     }
 
     // Triangulate the clipped polygon
-    std::vector<std::vector<Vertex>> triangles;
+    std::vector<std::vector<Vertex>> triangles; 
     if (input.size() >= 3)
     {
         for (size_t i = 1; i + 1 < input.size(); ++i)

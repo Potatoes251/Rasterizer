@@ -903,8 +903,8 @@ LibMath::Matrix4 LibMath::Matrix4::perspective(float fov, float aspectRatio, flo
 	return Matrix4(
 		1 / (tanFov * aspectRatio), 0.f, 0.f, 0.f,
 		0.f, 1 / tanFov, 0.f, 0.f,
-		0.f, 0.f, 0.f, -1.f,
-		0.f, (far + near) / (far - near), (2 * far * near) / (near - far), 0.f
+		0.f, 0.f, (far + near) / (far - near), (2 * far * near) / (near - far),
+		0.f, 0.f, -1.f, 0.f
 	);
 }
 
@@ -915,14 +915,17 @@ LibMath::Matrix4 LibMath::Matrix4::createTransform(LibMath::Vector3 translate, L
 
 	float k = 1 - cosR;
 
+	
+	axis.normalize();
+
 	float pow2X = powf(axis.getX(), 2.f);
 	float pow2Y = powf(axis.getY(), 2.f);
 	float pow2Z = powf(axis.getZ(), 2.f);
 
 	return Matrix4(
-		scale.getX() * ((pow2X * k) + cosR), (axis.getX() * axis.getY() * k) - (axis.getZ() * sinR), (axis.getX() * axis.getZ() * k) + (axis.getY() * sinR), translate.getX(),
-		(axis.getX() * axis.getY() * k) + (axis.getZ() * sinR), scale.getY() * ((pow2Y * k) + cosR), (axis.getY() * axis.getZ() * k) - (axis.getX() * sinR), translate.getY(),
-		(axis.getX() * axis.getZ() * k) - (axis.getY() * sinR), (axis.getY() * axis.getZ() * k) + (axis.getX() * sinR), scale.getZ() * ((pow2Z * k) + cosR), translate.getZ(),
+		scale.getX() * ((pow2X * k) + cosR), scale.getX() * ((axis.getX() * axis.getY() * k) - (axis.getZ() * sinR)), scale.getX() * ((axis.getX() * axis.getZ() * k) + (axis.getY() * sinR)), translate.getX(),
+		scale.getY() * ((axis.getX() * axis.getY() * k) + (axis.getZ() * sinR)), scale.getY() * ((pow2Y * k) + cosR), scale.getY() * ((axis.getY() * axis.getZ() * k) - (axis.getX() * sinR)), translate.getY(),
+		scale.getZ() * ((axis.getX() * axis.getZ() * k) - (axis.getY() * sinR)), scale.getZ() * ((axis.getY() * axis.getZ() * k) + (axis.getX() * sinR)), scale.getZ() * ((pow2Z * k) + cosR), translate.getZ(),
 		0.f, 0.f, 0.f, 1.f
 	);
 }
@@ -930,10 +933,10 @@ LibMath::Matrix4 LibMath::Matrix4::createTransform(LibMath::Vector3 translate, L
 LibMath::Matrix4 LibMath::Matrix4::createTranslate(LibMath::Vector3 translate)
 {
 	return Matrix4(
-		1.f, 0.f, 0.f, 0.f,
-		0.f, 1.f, 0.f, 0.f,
-		0.f, 0.f, 1.f, 0.f,
-		translate.getX(), translate.getY(), translate.getZ(), 1.f
+		1.f, 0.f, 0.f, translate.getX(),
+		0.f, 1.f, 0.f, translate.getY(),
+		0.f, 0.f, 1.f, translate.getZ(),
+		0.f, 0.f, 0.f, 1.f
 	);
 }
 
@@ -944,8 +947,8 @@ LibMath::Matrix4 LibMath::Matrix4::createRotationX(LibMath::Radian angle)
 
 	return Matrix4(
 		1.f, 0.f, 0.f, 0.f,
-		0.f, cosR, sinR, 0.0f,
-		0.f, -sinR, cosR, 0.0f,
+		0.f, cosR, -sinR, 0.0f,
+		0.f, sinR, cosR, 0.0f,
 		0.f, 0.f, 0.f, 1.f
 	);
 }
@@ -956,9 +959,9 @@ LibMath::Matrix4 LibMath::Matrix4::createRotationY(LibMath::Radian angle)
 	float sinR = LibMath::sin(angle);
 
 	return Matrix4(
-		cosR, 0.f, -sinR, 0.f,
+		cosR, 0.f, sinR, 0.f,
 		0.f, 1.f, 0.f, 0.f,
-		sinR, 0.f, cosR, 0.f,
+		-sinR, 0.f, cosR, 0.f,
 		0.f, 0.f, 0.f, 1.f
 	);
 }
@@ -969,8 +972,8 @@ LibMath::Matrix4 LibMath::Matrix4::createRotationZ(LibMath::Radian angle)
 	float sinR = LibMath::sin(angle);
 
 	return Matrix4(
-		cosR, sinR, 0.f, 0.f,
-		-sinR, cosR, 0.f, 0.f,
+		cosR, -sinR, 0.f, 0.f,
+		sinR, cosR, 0.f, 0.f,
 		0.f, 0.f, 1.f, 0.f,
 		0.f, 0.f, 0.f, 1.f
 	);
@@ -978,7 +981,7 @@ LibMath::Matrix4 LibMath::Matrix4::createRotationZ(LibMath::Radian angle)
 
 LibMath::Matrix4 LibMath::Matrix4::createScale(LibMath::Vector3 scale)
 {
-
+	scale.normalize();
 	return Matrix4(
 		scale.getX(), 0.f, 0.f, 0.f,
 		0.f, scale.getY(), 0.f, 0.f,
@@ -1004,7 +1007,7 @@ LibMath::Matrix4 LibMath::operator+(Matrix4 m1, Matrix4 m2)
 		m1[1][0] + m2[1][0], m1[1][1] + m2[1][1], m1[1][2] + m2[1][2], m1[1][3] + m2[1][3],
 		m1[2][0] + m2[2][0], m1[2][1] + m2[2][1], m1[2][2] + m2[2][2], m1[2][3] + m2[2][3],
 		m1[3][0] + m2[3][0], m1[3][1] + m2[3][1], m1[3][2] + m2[3][2], m1[3][3] + m2[3][3]
-	);
+	).transpose();
 }
 
 LibMath::Matrix4 LibMath::operator*(Matrix4 m, float scalair)
@@ -1024,30 +1027,30 @@ LibMath::Vector4 LibMath::operator*(Matrix4& m, LibMath::Vector4& vec)
 		(m[1][0] * vec.getX()) + (m[1][1] * vec.getY()) + (m[1][2] * vec.getZ()) + (m[1][3] * vec.getK()),
 		(m[2][0] * vec.getX()) + (m[2][1] * vec.getY()) + (m[2][2] * vec.getZ()) + (m[2][3] * vec.getK()),
 		(m[3][0] * vec.getX()) + (m[3][1] * vec.getY()) + (m[3][2] * vec.getZ()) + (m[3][3] * vec.getK())
-	);
+	); 
 }
 
 LibMath::Matrix4 LibMath::operator*(Matrix4 m1, Matrix4 m2)
 {
-	float comp00 = (m2[0][0] * m1[0][0]) + (m2[0][1] * m1[1][0]) + (m2[0][2] * m1[2][0]) + (m2[0][3] * m1[3][0]);
-	float comp01 = (m2[0][0] * m1[0][1]) + (m2[0][1] * m1[1][1]) + (m2[0][2] * m1[2][1]) + (m2[0][3] * m1[3][1]);
-	float comp02 = (m2[0][0] * m1[0][2]) + (m2[0][1] * m1[1][2]) + (m2[0][2] * m1[2][2]) + (m2[0][3] * m1[3][2]);
-	float comp03 = (m2[0][0] * m1[0][3]) + (m2[0][1] * m1[1][3]) + (m2[0][2] * m1[2][3]) + (m2[0][3] * m1[3][3]);
+	float comp00 = (m1[0][0] * m2[0][0]) + (m1[0][1] * m2[1][0]) + (m1[0][2] * m2[2][0]) + (m1[0][3] * m2[3][0]);
+	float comp01 = (m1[0][0] * m2[0][1]) + (m1[0][1] * m2[1][1]) + (m1[0][2] * m2[2][1]) + (m1[0][3] * m2[3][1]);
+	float comp02 = (m1[0][0] * m2[0][2]) + (m1[0][1] * m2[1][2]) + (m1[0][2] * m2[2][2]) + (m1[0][3] * m2[3][2]);
+	float comp03 = (m1[0][0] * m2[0][3]) + (m1[0][1] * m2[1][3]) + (m1[0][2] * m2[2][3]) + (m1[0][3] * m2[3][3]);
 
-	float comp10 = (m2[1][0] * m1[0][0]) + (m2[1][1] * m1[1][0]) + (m2[1][2] * m1[2][0]) + (m2[1][3] * m1[3][0]);
-	float comp11 = (m2[1][0] * m1[0][1]) + (m2[1][1] * m1[1][1]) + (m2[1][2] * m1[2][1]) + (m2[1][3] * m1[3][1]);
-	float comp12 = (m2[1][0] * m1[0][2]) + (m2[1][1] * m1[1][2]) + (m2[1][2] * m1[2][2]) + (m2[1][3] * m1[3][2]);
-	float comp13 = (m2[1][0] * m1[0][3]) + (m2[1][1] * m1[1][3]) + (m2[1][2] * m1[2][3]) + (m2[1][3] * m1[3][3]);
+	float comp10 = (m1[1][0] * m2[0][0]) + (m1[1][1] * m2[1][0]) + (m1[1][2] * m2[2][0]) + (m1[1][3] * m2[3][0]);
+	float comp11 = (m1[1][0] * m2[0][1]) + (m1[1][1] * m2[1][1]) + (m1[1][2] * m2[2][1]) + (m1[1][3] * m2[3][1]);
+	float comp12 = (m1[1][0] * m2[0][2]) + (m1[1][1] * m2[1][2]) + (m1[1][2] * m2[2][2]) + (m1[1][3] * m2[3][2]);
+	float comp13 = (m1[1][0] * m2[0][3]) + (m1[1][1] * m2[1][3]) + (m1[1][2] * m2[2][3]) + (m1[1][3] * m2[3][3]);
 
-	float comp20 = (m2[2][0] * m1[0][0]) + (m2[2][1] * m1[1][0]) + (m2[2][2] * m1[2][0]) + (m2[2][3] * m1[3][0]);
-	float comp21 = (m2[2][0] * m1[0][1]) + (m2[2][1] * m1[1][1]) + (m2[2][2] * m1[2][1]) + (m2[2][3] * m1[3][1]);
-	float comp22 = (m2[2][0] * m1[0][2]) + (m2[2][1] * m1[1][2]) + (m2[2][2] * m1[2][2]) + (m2[2][3] * m1[3][2]);
-	float comp23 = (m2[2][0] * m1[0][3]) + (m2[2][1] * m1[1][3]) + (m2[2][2] * m1[2][3]) + (m2[2][3] * m1[3][3]);
+	float comp20 = (m1[2][0] * m2[0][0]) + (m1[2][1] * m2[1][0]) + (m1[2][2] * m2[2][0]) + (m1[2][3] * m2[3][0]);
+	float comp21 = (m1[2][0] * m2[0][1]) + (m1[2][1] * m2[1][1]) + (m1[2][2] * m2[2][1]) + (m1[2][3] * m2[3][1]);
+	float comp22 = (m1[2][0] * m2[0][2]) + (m1[2][1] * m2[1][2]) + (m1[2][2] * m2[2][2]) + (m1[2][3] * m2[3][2]);
+	float comp23 = (m1[2][0] * m2[0][3]) + (m1[2][1] * m2[1][3]) + (m1[2][2] * m2[2][3]) + (m1[2][3] * m2[3][3]);
 
-	float comp30 = (m2[3][0] * m1[0][0]) + (m2[3][1] * m1[1][0]) + (m2[3][2] * m1[2][0]) + (m2[3][3] * m1[3][0]);
-	float comp31 = (m2[3][0] * m1[0][1]) + (m2[3][1] * m1[1][1]) + (m2[3][2] * m1[2][1]) + (m2[3][3] * m1[3][1]);
-	float comp32 = (m2[3][0] * m1[0][2]) + (m2[3][1] * m1[1][2]) + (m2[3][2] * m1[2][2]) + (m2[3][3] * m1[3][2]);
-	float comp33 = (m2[3][0] * m1[0][3]) + (m2[3][1] * m1[1][3]) + (m2[3][2] * m1[2][3]) + (m2[3][3] * m1[3][3]);
+	float comp30 = (m1[3][0] * m2[0][0]) + (m1[3][1] * m2[1][0]) + (m1[3][2] * m2[2][0]) + (m1[3][3] * m2[3][0]);
+	float comp31 = (m1[3][0] * m2[0][1]) + (m1[3][1] * m2[1][1]) + (m1[3][2] * m2[2][1]) + (m1[3][3] * m2[3][1]);
+	float comp32 = (m1[3][0] * m2[0][2]) + (m1[3][1] * m2[1][2]) + (m1[3][2] * m2[2][2]) + (m1[3][3] * m2[3][2]);
+	float comp33 = (m1[3][0] * m2[0][3]) + (m1[3][1] * m2[1][3]) + (m1[3][2] * m2[2][3]) + (m1[3][3] * m2[3][3]);
 
 	return Matrix4(
 		comp00, comp01, comp02, comp03,

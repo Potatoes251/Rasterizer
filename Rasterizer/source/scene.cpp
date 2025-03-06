@@ -12,7 +12,7 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
 
     // set the light
 
-    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(.2, 0.4, 0.4, LibMath::Vector3(400,300,1000)) };
+    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(.2, 0.6, 0.4, LibMath::Vector3(400,300,500)) };
 
     // entity 1 : cube
 
@@ -54,7 +54,7 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
 
     //// entity 4 : cube behind next cube
 
-    Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_MAGENTA);
+    Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_GOLD);
 
     entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f),
                                                                         LibMath::Radian(),

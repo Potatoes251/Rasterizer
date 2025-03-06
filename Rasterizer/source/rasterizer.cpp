@@ -37,8 +37,8 @@ void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const
             for each(std::vector<Vertex> clippedTriangle in Triangles)
             {
                 // project vertex on a 2D plane
-                Vertex v1 = projectVertex(clippedTriangle[1], pTexture->m_width, pTexture->m_height);
-                Vertex v2 = projectVertex(clippedTriangle[0], pTexture->m_width, pTexture->m_height);
+                Vertex v1 = projectVertex(clippedTriangle[0], pTexture->m_width, pTexture->m_height);
+                Vertex v2 = projectVertex(clippedTriangle[1], pTexture->m_width, pTexture->m_height);
                 Vertex v3 = projectVertex(clippedTriangle[2], pTexture->m_width, pTexture->m_height);
 
                 if (edgeFunction(v1, v2, v3) < 0) continue; // back face culling
@@ -208,7 +208,7 @@ LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float
     xaxis.normalize();
 
     // Up vector (Y-axis)
-    LibMath::Vector3 yaxis = zaxis.cross(xaxis); // Already normalized
+    LibMath::Vector3 yaxis = xaxis.cross(zaxis); // Already normalized
 
     float dotXAxis = xaxis.dot(eye);
     float dotYAxis = yaxis.dot(eye);
@@ -216,10 +216,10 @@ LibMath::Matrix4 Structures::createViewMatrix(const LibMath::Vector3& eye, float
 
 
     LibMath::Matrix4 ViewMatrix(
-        xaxis.getX(), yaxis.getX(), zaxis.getX(), 0,
-        xaxis.getY(), yaxis.getY(), zaxis.getY(), 0,
-        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), 0,
-        -dotXAxis,      -dotYAxis,    -dotZAxis,  1
+        xaxis.getX(), yaxis.getX(), zaxis.getX(), -dotXAxis,
+        xaxis.getY(), yaxis.getY(), zaxis.getY(), -dotYAxis,
+        xaxis.getZ(), yaxis.getZ(), zaxis.getZ(), -dotZAxis,
+            0.f,          0.f,          0.f,          1
     );
 
     // Create a 4x4 view matrix from the right, up, forward and eye position vectors
@@ -323,7 +323,7 @@ void Structures::mainLoop(Structures::Camera& camera, Texture& texture, Scene& s
         scene.m_entities[3].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 1.5f, -3.f),
             LibMath::Radian(rotation),
             LibMath::Vector3(1.25f, 1.25f, 1.25f));
-        scene.m_entities[4].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 1.5f, -2.5f),
+        scene.m_entities[4].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 0.5f, -0.0f),
             LibMath::Radian(rotation));
         scene.m_entities[5].m_transform = LibMath::Matrix4::createTransform(LibMath::Vector3(-2.f, 0.f, -2.f),
             LibMath::Radian(rotation));
@@ -359,7 +359,7 @@ Structures::Vertex Structures::Rasterizer::projectVertex(Vertex v, float width, 
     int p_x = ((x / 1.005) + 1) * 0.5 * width;
     int p_y = height - (((y / 1.005) + 1) * 0.5 * height);
 
-    Structures::Vertex projectedVertex(p_x, p_y, 0, v.m_color);
+    Structures::Vertex projectedVertex(p_x, p_y, v[2], v.m_color);
     projectedVertex.m_normal = v.m_normal;
     projectedVertex.m_u = v.m_u;
     projectedVertex.m_v = v.m_v;
