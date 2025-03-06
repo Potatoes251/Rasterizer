@@ -3,16 +3,11 @@
 #include "rasterizer.h"
 #include "scene.h"
 
-#include "memoryLeak.h"
-
-
 #define SCREENWIDTH 800
 #define SCREENHEIGHT 600
 
 int main(void)
 {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "rasterizer");
 
     SetTargetFPS(60);
@@ -23,13 +18,27 @@ int main(void)
 
     LibMath::Matrix4 projectionMatrix = LibMath::Matrix4::perspective(M_PI / 2.f, 10.f / 10.f, .1f, 100.f);
 
-    Structures::Camera camera = {LibMath::Vector3(0.f, 0.f, 5.f), 0.f, 0.f};
+    Structures::Camera camera = { LibMath::Vector3(0.f, 0.f, 5.f), 0.f, 0.f };
+
+    /*LibMath::Matrix4 viewMatrix = Structures::createViewMatrix(LibMath::Vector3(0., 5.0f, 50.f), camera.m_pitch, camera.m_yaw);
+
+   rasterizer.renderScene(&scene, &tex, projectionMatrix, viewMatrix);*/
 
     mainLoop(camera, tex, scene, projectionMatrix);
 
-    deleteAndCloseWindow(scene, tex);
+    for (int i = 0; i < scene.m_entities.size(); ++i)
+    {
+        if (scene.m_entities[i].m_texture)
+        {
+            delete scene.m_entities[i].m_texture;
+        }
+        if (scene.m_entities[i].m_mesh)
+        {
+            delete scene.m_entities[i].m_mesh;
+        }
+    }
 
-    _CrtDumpMemoryLeaks();
+    CloseWindow();
 
     return 0;
 }
