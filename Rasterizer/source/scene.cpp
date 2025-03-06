@@ -13,7 +13,8 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
 
     // set the light
 
-    scene.m_lights = std::vector<Structures::Light>{ Structures::Light(.2, 0.6, 0.4, LibMath::Vector3(400,300,500)) };
+    Structures::Light light = Structures::Light(.2, 0.6, 0.4, LibMath::Vector3(400, 300, 500));
+    scene.m_lights.push_back(light);
 
     // entity 1 : cube
 

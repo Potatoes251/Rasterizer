@@ -64,6 +64,26 @@ float Structures::Rasterizer::edgeFunction(Vertex v1, Vertex v2, Vertex v3)
     return -((v2[0] - v1[0]) * (v3[1] - v1[1]) - (v2[1] - v1[1]) * (v3[0] - v1[0]));
 }
 
+Structures::Color Structures::Rasterizer::getNearestTexel(Vertex v, Texture* tex)
+{// nearest neighbor interpolation
+    float   xTex = v.m_u * (tex->m_width - 1);
+    float   yTex = v.m_v * (tex->m_height - 1);
+
+    int     x = static_cast<int>(xTex);
+    int     y = static_cast<int>(yTex);
+
+    if (xTex - x > 0.5f)
+    {
+        ++x;
+    }
+    if (yTex - y > 0.5f)
+    {
+        ++y;
+    }
+
+    return tex->m_pixels[(y * tex->m_width) + x];
+}
+
 Structures::Color Structures::Rasterizer::getTexelColor(Vertex v, Texture* tex)
 {// bilinear interpolation
 
@@ -120,7 +140,8 @@ void Structures::Rasterizer::fillTriangle(Vertex v1, Vertex v2, Vertex v3, Textu
                 point.m_u = (v3.m_u * alpha + v1.m_u * beta + v2.m_u * gamma);  // interpolate the texture coordinate
                 point.m_v = (v3.m_v * alpha + v1.m_v * beta + v2.m_v * gamma);
 
-                point.m_color = getTexelColor(point, objectTexture); // fetch texel color
+                point.m_color = getNearestTexel(point, objectTexture); // fetch texel color with nearest neighbor
+                //point.m_color = getTexelColor(point, objectTexture); // fetch texel color with bilinear
             }
             else
             {
@@ -283,22 +304,18 @@ void Structures::inputManager(Structures::Camera& camera, bool& wireframe)
     if (IsKeyPressed(KEY_W))
     {
         camera.m_position.getY() += cameraSpeed;
-        //std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
     }
     if (IsKeyPressed(KEY_S))
     {
         camera.m_position.getY() -= cameraSpeed;
-        //std::cout << "Camera z : " << camera.m_position.getZ() << '\n';
     }
     if (IsKeyPressed(KEY_A))
     {
         camera.m_position.getX() += cameraSpeed; 
-        //std::cout << "Camera x : " << camera.m_position.getX() << '\n';
     }
     if (IsKeyPressed(KEY_D))
     {
         camera.m_position.getX() -= cameraSpeed;
-        //std::cout << "Camera x : " << camera.m_position.getX() << '\n';
     }
 
 }
