@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "memoryLeak.h"
 
 Structures::Scene::Scene(std::vector<Entity> entities, std::vector<Light> lights)
 {
@@ -42,17 +43,17 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
     entity.m_alpha = 1.f;
     scene.m_entities.push_back(entity);
     
-    //// entity 3 : textured cube
+    // entity 3 : textured cube
 
     Structures::Texture* cubeTexture = new Structures::Texture("../../Rasterizer/include/image.jpg");
-    //Structures::Texture* cubeTexture = nullptr;
+
     Structures::Mesh* cube2 = Structures::Mesh::createCube(cubeTexture, COLOR_MAGENTA);
 
     entity = Structures::Entity(cube2, LibMath::Matrix4::createTransform(LibMath::Vector3(-1.5f, 0.f, -2.f)));
     entity.m_alpha = 1.f;
     scene.m_entities.push_back(entity);
 
-    //// entity 4 : cube behind next cube
+    // entity 4 : cube behind next cube
 
     Structures::Mesh* cube4 = Structures::Mesh::createCube(nullptr, COLOR_GOLD);
 
@@ -62,10 +63,7 @@ Structures::Scene   Structures::Scene::createProjectScene(Structures::Texture& t
     entity.m_alpha = 1.f;
     scene.m_entities.push_back(entity);
 
-
-    //entity = Structures::Entity(cube4, LibMath::Matrix4::createTransform(LibMath::Vector3(0.f, 2.5f, -2.f)));
-    //entity.m_alpha = .3f;
-    //scene.m_entities.push_back(entity);
+    // entity 5 : cube in front previous cube
 
     Structures::Mesh* cube3 = Structures::Mesh::createCube(nullptr, COLOR_CYAN);
 

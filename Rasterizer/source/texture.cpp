@@ -5,7 +5,7 @@
 #include "raylib.h"
 
 #include <iostream>
-
+#include "memoryLeak.h"
 #include "texture.h"
 
 Structures::Texture::Texture(unsigned int width, unsigned int height, Color color, float zMax)
@@ -45,6 +45,18 @@ Structures::Texture::Texture(char const* texture)
     
     std::memcpy(m_pixels, data, width * height * sizeof(Color));
     stbi_image_free(data);
+}
+
+Structures::Texture::~Texture()
+{
+    //if (m_pixels)
+    {
+        //delete m_pixels;
+    }
+    if (m_zBuffer)
+    {
+        //delete m_zBuffer;
+    }
 }
 
 void Structures::Texture::setPixelColor(unsigned int x, unsigned int y, const Color& c, float alpha)

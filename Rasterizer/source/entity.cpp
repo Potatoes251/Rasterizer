@@ -1,5 +1,5 @@
 #include "entity.h"
-
+#include "memoryLeak.h"
 Structures::Entity::Entity(Mesh* mesh, LibMath::Matrix4 transform, Texture* tex, float alpha)
 {
     m_mesh = mesh;
@@ -16,6 +16,15 @@ Structures::Entity::Entity(Entity const& other)
     m_alpha = other.m_alpha;
 }
 
+Structures::Entity::~Entity()
+{
+    if (m_mesh)
+    {
+        //std::cout << "delete mesh here" << '\n' << '\n';
+        //delete m_mesh;
+    }
+}
+
 Structures::Entity&     Structures::Entity::operator=(Entity const& other)
 {
     m_mesh = other.m_mesh;
@@ -25,6 +34,21 @@ Structures::Entity&     Structures::Entity::operator=(Entity const& other)
 
     return *this;
 }
+
+//Structures::Entity& Structures::Entity::operator=(Entity&& other)
+//{
+//    m_mesh = std::move(other.m_mesh);
+//    m_texture = std::move(other.m_texture);
+//    m_transform = std::move(other.m_transform);
+//    m_alpha = std::move(other.m_alpha);
+//
+//    other.m_mesh = nullptr;
+//    other.m_texture = nullptr;
+//    other.m_alpha = 0.f;
+//
+//    return *this;
+//}
+    
 
 Structures::Mesh    Structures::Entity::getTransformedMesh(LibMath::Matrix4 projection_viewMatrix)
 {

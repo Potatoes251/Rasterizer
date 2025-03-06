@@ -36,7 +36,7 @@ namespace Structures
 
 	void					inputManager(Structures::Camera& camera, bool& wireframe);
 	void					mainLoop(Structures::Camera& camera, Texture& texture, Scene& scene, LibMath::Matrix4& projectionMatrix);
-	void					deleteAndCloseWindow(Scene& scene);
+	void					deleteAndCloseWindow(Scene& scene, Texture& texture);
 }
 
 #endif

@@ -13,6 +13,7 @@ namespace Structures
 	{
 		Mesh(std::vector<Vertex> vertices, std::vector<int> indices);
 		Mesh() = default;
+		~Mesh();
 
 		static Mesh*		createCube(Texture* tex, Structures::Color color);
 		static void			setNormalsCube(Mesh* cubeMesh);

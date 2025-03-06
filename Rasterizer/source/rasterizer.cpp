@@ -1,6 +1,8 @@
 #define _USE_MATH_DEFINES
 #include "rasterizer.h"
 
+#include "memoryLeak.h"
+
 void Structures::Rasterizer::renderScene(Scene* pScene, Texture* pTexture, const LibMath::Matrix4& projectionMatrix, LibMath::Matrix4 const& viewMatrix, bool wireframe)
 {// render the scene in the texture
 
@@ -335,18 +337,33 @@ void Structures::mainLoop(Structures::Camera& camera, Texture& texture, Scene& s
     }
 }
 
-void Structures::deleteAndCloseWindow(Scene& scene)
+void Structures::deleteAndCloseWindow(Scene& scene, Texture& texture)
 {
     for (int i = 0; i < scene.m_entities.size(); ++i)
     {
-        if (scene.m_entities[i].m_texture)
+        if (scene.m_entities[i].m_mesh->m_texture)
         {
-            delete scene.m_entities[i].m_texture;
+            std::cout << "delete texture" << '\n' << '\n';
+            delete scene.m_entities[i].m_mesh->m_texture->m_pixels;
+            delete scene.m_entities[i].m_mesh->m_texture;
         }
         if (scene.m_entities[i].m_mesh)
         {
+            std::cout << "delete mesh" << '\n' << '\n';
             delete scene.m_entities[i].m_mesh;
         }
+    }
+    std::cout << "delete background texture" << '\n' << '\n';
+    if (texture.m_pixels)
+    {
+        std::cout << "delete pixels" << '\n' << '\n';
+        delete texture.m_pixels;
+    }
+
+    if (texture.m_zBuffer)
+    {
+        std::cout << "delete zbuffer" << '\n' << '\n';
+        delete texture.m_zBuffer;
     }
 
     CloseWindow();

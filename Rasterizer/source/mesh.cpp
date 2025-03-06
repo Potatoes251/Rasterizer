@@ -2,13 +2,21 @@
 #ifndef _CMATH_
 #include <cmath>
 #endif // !_CMATH_
-
+#include "memoryLeak.h"
 #include "mesh.h"
 
 Structures::Mesh::Mesh(std::vector<Vertex> vertices, std::vector<int> indices)
 {
     m_vertices = vertices;
     m_indices = indices;
+}
+
+Structures::Mesh::~Mesh()
+{
+    if (m_texture)
+    {
+        //delete m_texture;
+    }
 }
 
 Structures::Mesh*       Structures::Mesh::createCube(Texture* tex, Structures::Color color)
