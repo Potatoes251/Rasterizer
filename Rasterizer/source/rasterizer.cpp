@@ -276,46 +276,49 @@ LibMath::Matrix4 Structures::lookAt(const LibMath::Vector3& eye, const LibMath::
 
 void Structures::inputManager(Structures::Camera& camera, bool& wireframe)
 {
+
+    float cameraSpeed = 0.2f;
+
     if (IsKeyPressed(KEY_F1))
     {
         wireframe = !wireframe;
     }
     if (IsKeyPressed(KEY_UP))
     {
-        camera.m_pitch -= 0.1f;
+        camera.m_pitch += cameraSpeed;
     }
 
     if (IsKeyPressed(KEY_DOWN))
     {
-        camera.m_pitch += 0.1f;
+        camera.m_pitch -= cameraSpeed;
     }
 
     if (IsKeyPressed(KEY_LEFT))
     {
-        camera.m_yaw -= 0.1f;
+        camera.m_yaw += cameraSpeed;
     }
 
     if (IsKeyPressed(KEY_RIGHT))
     {
-        camera.m_yaw += 0.1f;
+        camera.m_yaw -= cameraSpeed;
     }
 
-    float cameraSpeed = 0.2f;
+    
     if (IsKeyPressed(KEY_W))
-    {
-        camera.m_position.getY() += cameraSpeed;
-    }
-    if (IsKeyPressed(KEY_S))
     {
         camera.m_position.getY() -= cameraSpeed;
     }
+    if (IsKeyPressed(KEY_S))
+    {
+        camera.m_position.getY() += cameraSpeed;
+    }
     if (IsKeyPressed(KEY_A))
     {
-        camera.m_position.getX() += cameraSpeed; 
+        camera.m_position.getX() -= cameraSpeed; 
     }
     if (IsKeyPressed(KEY_D))
     {
-        camera.m_position.getX() -= cameraSpeed;
+        camera.m_position.getX() += cameraSpeed;
     }
 
 }
