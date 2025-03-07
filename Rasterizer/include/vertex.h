@@ -10,17 +10,17 @@ namespace Structures
 {
 	struct Vertex
 	{
-		Vertex() = default;
-		Vertex(float x, float y, float z, Structures::Color color = COLOR_WHITE);
-		Vertex(float x, float y, float z, float u, float v, Structures::Color color = COLOR_WHITE);
-		Vertex(LibMath::Vector4 vec, Structures::Color color = COLOR_WHITE);
-		Vertex(const LibMath::Vector3 vec, const Structures::Color color = COLOR_WHITE);
+								Vertex() = default;
+								Vertex(float x, float y, float z, Structures::Color color = COLOR_WHITE);
+								Vertex(float x, float y, float z, float u, float v, Structures::Color color = COLOR_WHITE);
+								Vertex(LibMath::Vector4 vec, Structures::Color color = COLOR_WHITE);
+								Vertex(const LibMath::Vector3 vec, const Structures::Color color = COLOR_WHITE);
 
-		float		operator[](int index); // return the x, y or z coordinate of the position
+		float					operator[](int index); // return the x, y or z coordinate of the position
 
-		float		calculatediffuse(Structures::Light light);
-		float		calculateSpecular(Structures::Light light, Structures::Vertex viewPoint);
-		void		calculateLighting(Structures::Light light, Structures::Vertex viewPoint);
+		float					calculatediffuse(Structures::Light light);
+		float					calculateSpecular(Structures::Light light, Structures::Vertex viewPoint);
+		void					calculateLighting(Structures::Light light, Structures::Vertex viewPoint);
 		
 		LibMath::Vector3		m_position;
 		LibMath::Vector3		m_normal;

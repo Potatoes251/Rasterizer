@@ -16,23 +16,23 @@ namespace Structures
 {
 	struct Color
 	{
-					Color() = default;
+							Color() = default;
 
-					Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-					Color(Color const& other);
+							Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+							Color(Color const& other);
 
-		Color&		operator=(Color const& other);
+		Color&				operator=(Color const& other);
 
-		unsigned char m_r = 0;
-		unsigned char m_g = 0;
-		unsigned char m_b = 0;
-		unsigned char m_a = 255;
+		unsigned char		m_r = 0;
+		unsigned char		m_g = 0;
+		unsigned char		m_b = 0;
+		unsigned char		m_a = 255;
 
 	};
 
-	Color		operator*(Color color, float val);
-	Color		operator-(Color c1, Color c2);
-	Color		operator+(Color c1, Color c2);
+	Color					operator*(Color color, float val);
+	Color					operator-(Color c1, Color c2);
+	Color					operator+(Color c1, Color c2);
 }
 
 

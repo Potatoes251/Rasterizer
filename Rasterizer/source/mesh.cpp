@@ -11,14 +11,6 @@ Structures::Mesh::Mesh(std::vector<Vertex> vertices, std::vector<int> indices)
     m_indices = indices;
 }
 
-Structures::Mesh::~Mesh()
-{
-    if (m_texture)
-    {
-        //delete m_texture;
-    }
-}
-
 Structures::Mesh*       Structures::Mesh::createCube(Texture* tex, Structures::Color color)
 {
     Mesh*       cubeMesh = new Mesh();
@@ -168,6 +160,7 @@ Structures::Mesh*       Structures::Mesh::createSphere(int widthSegments, int he
             indices.push_back(first + 1);
         }
     }
+
     Mesh*   SphereMesh = new Mesh(vertices, indices);
     setNormalsSphere(SphereMesh);
     return SphereMesh;

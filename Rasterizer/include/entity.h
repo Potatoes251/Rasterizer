@@ -10,9 +10,9 @@ namespace Structures
 {
 	struct Entity
 	{
-		Entity() = default;
-		Entity(Mesh* mesh, LibMath::Matrix4 transform, Texture* tex = nullptr, float alpha = 1.f);
-		Entity(Entity const&);
+							Entity() = default;
+							Entity(Mesh* mesh, LibMath::Matrix4 transform = LibMath::Matrix4::identity(), Texture* tex = nullptr, float alpha = 1.f);
+							Entity(Entity const&);
 
 		Entity&				operator=(Entity const& other);
 

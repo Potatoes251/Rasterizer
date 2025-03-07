@@ -1,5 +1,7 @@
 #include "entity.h"
 #include "memoryLeak.h"
+
+
 Structures::Entity::Entity(Mesh* mesh, LibMath::Matrix4 transform, Texture* tex, float alpha)
 {
     m_mesh = mesh;

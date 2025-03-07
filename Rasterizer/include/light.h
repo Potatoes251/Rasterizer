@@ -7,13 +7,13 @@ namespace Structures
 {
 	struct Light
 	{
-		Light(float ambient, float diffuse, float specular, LibMath::Vector3 position);
+							Light(float ambient, float diffuse, float specular, LibMath::Vector3 position);
 
-		float m_ambient;
-		float m_diffuse;
-		float m_specular;
+		float				m_ambient = 0.f;
+		float				m_diffuse = 0.f;
+		float				m_specular = 0.f;
 
-		LibMath::Vector3 m_position;
+		LibMath::Vector3	m_position;
 	};
 }
 

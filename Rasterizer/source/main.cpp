@@ -24,7 +24,7 @@ int main(void)
 
     LibMath::Matrix4 projectionMatrix = LibMath::Matrix4::perspective(M_PI / 2.f, 10.f / 10.f, .1f, 100.f);
 
-    Structures::Camera camera = {LibMath::Vector3(0.f, 0.f, 5.f), 0.f, 0.f};
+    Structures::Camera camera = {LibMath::Vector3(0.f, 0.f, 7.f), 0.f, 0.f};
 
     mainLoop(camera, tex, scene, projectionMatrix);
 

@@ -47,18 +47,6 @@ Structures::Texture::Texture(char const* texture)
     stbi_image_free(data);
 }
 
-Structures::Texture::~Texture()
-{
-    //if (m_pixels)
-    {
-        //delete m_pixels;
-    }
-    if (m_zBuffer)
-    {
-        //delete m_zBuffer;
-    }
-}
-
 void Structures::Texture::setPixelColor(unsigned int x, unsigned int y, const Color& c, float alpha)
 {
     Structures::Color finalColor;
