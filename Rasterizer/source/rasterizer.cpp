@@ -291,9 +291,17 @@ void Structures::inputManager(Structures::Camera& camera, bool& wireframe)
 
     if (IsKeyPressed(KEY_W))
     {
-        camera.m_position.getY() += cameraSpeed;
+        camera.m_position.getZ() -= cameraSpeed;
     }
     if (IsKeyPressed(KEY_S))
+    {
+        camera.m_position.getZ() += cameraSpeed;
+    }
+    if (IsKeyPressed(KEY_Q))
+    {
+        camera.m_position.getY() += cameraSpeed;
+    }
+    if (IsKeyPressed(KEY_E))
     {
         camera.m_position.getY() -= cameraSpeed;
     }
